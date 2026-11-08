@@ -1,1 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>EPCOT Food & Wine Festival Companion & Tracker</title>
+  
+  <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            wine: {
+              50: '#fdf2f4',
+              100: '#fce7eb',
+              200: '#f9d2d9',
+              300: '#f3abb9',
+              500: '#a31d3d',
+              700: '#75132a',
+              800: '#5a0e20',
+              900: '#3d0815',
+              950: '#26040c',
+            },
+            gold: {
+              300: '#fde047',
+              400: '#facc15',
+              500: '#eab308',
+              600: '#ca8a04',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
 
+  <style>
+    /* Custom subtle scrollbar & tap highlights */
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased min-h-screen flex flex-col font-sans pb-16 selection:bg-rose-200 selection:text-wine-900">
+
+  <!-- ================= TOP HERO / HEADER ================= -->
+  <header class="bg-gradient-to-r from-wine-900 via-wine-800 to-stone-900 text-white relative shadow-lg overflow-hidden">
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fde047_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    
+    <div class="max-w-6xl mx-auto px-4 pt-5 pb-4 relative z-10">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-400 text-lg shadow-inner">
+            <i class="fa-solid fa-wine-glass-empty"></i>
+          </div>
+          <div>
+            <span class="text-[10px] tracking-widest uppercase font-bold text-gold-400 block -mb-0.5">EPCOT International</span>
+            <h1 class="text-xl sm:text-2xl font-serif font-bold text-white tracking-tight">Food & Wine Festival</h1>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="flex items-center gap-2">
+          <button id="exportBtn" title="Share / Backup Choices" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-stone-100 border border-white/15 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-share-nodes text-[11px]"></i>
+            <span class="hidden sm:inline">Export</span>
+          </button>
+          <button id="resetDataBtn" title="Reset Selections" class="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-400/30 text-xs font-semibold transition flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-rotate-left text-[11px]"></i>
+            <span class="hidden sm:inline">Reset</span>
+          </button>
+        </div>
+      </div>
+      <p class="text-xs text-stone-300 mt-2 line-clamp-1 sm:line-clamp-none">Tasting Passport & Budget Companion. Track dishes, track festival spend, & conquer Emile's Fromage Montage!</p>
+    </div>
+  </header>
+
+  <!-- ================= LIVE TRACKING SUMMARY BANNER (STICKY) ================= -->
+  <section class="sticky top-0 z-30 bg-stone-900/95 backdrop-blur-md border-b border-stone-800 text-white shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-2.5">
+      <div class="grid grid-cols-4 gap-2 sm:gap-4 items-center">
+        
+        <!-- Tasted Counter -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2.5 bg-stone-800/80 px-2.5 py-1.5 rounded-xl border border-stone-700/60">
+          <div class="w-6 h-6 rounded-md bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs self-start sm:self-auto">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div>
+            <div class="text-[10px] text-stone-400 font-semibold uppercase tracking-wider">Tasted</div>
+            <div class="text-sm sm:text-base font-extrabold text-white leading-tight">
+              <span id="statTasted">0</span>
+              <span class="text-[10px] text-stone-400 font-normal">items</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Spend -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2.5 bg-stone-800/80 px-2.5 py-1.5 rounded-xl border border-stone-700/60">
+          <div class="w-6 h-6 rounded-md bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs self-start sm:self-auto">
+            <i class="fa-solid fa-receipt"></i>
+          </div>
+          <div>
+            <div class="text-[10px] text-stone-400 font-semibold uppercase tracking-wider">Spend</div>
+            <div class="text-sm sm:text-base font-extrabold text-amber-300 leading-tight">
+              $<span id="statSpend">0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Want to Try -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2.5 bg-stone-800/80 px-2.5 py-1.5 rounded-xl border border-stone-700/60">
+          <div class="w-6 h-6 rounded-md bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs self-start sm:self-auto">
+            <i class="fa-solid fa-bookmark"></i>
+          </div>
+          <div>
+            <div class="text-[10px] text-stone-400 font-semibold uppercase tracking-wider">Wishlist</div>
+            <div class="text-sm sm:text-base font-extrabold text-white leading-tight">
+              <span id="statWishlist">0</span>
+              <span class="text-[10px] text-stone-400 font-normal">items</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Emile's Fromage Montage Progress -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2.5 bg-stone-800/80 px-2.5 py-1.5 rounded-xl border border-stone-700/60 relative overflow-hidden group cursor-pointer" id="fromageQuickFilterBtn" title="Click to filter Emile's Fromage Montage items">
+          <div class="w-6 h-6 rounded-md bg-yellow-500/20 text-yellow-300 flex items-center justify-center text-xs self-start sm:self-auto">
+            <i class="fa-solid fa-cheese"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between text-[10px] text-stone-400 font-semibold uppercase tracking-wider">
+              <span>Cheese Trail</span>
+              <span id="statCheeseCount" class="font-bold text-yellow-300">0/5</span>
+            </div>
+            <!-- Progress mini bar -->
+            <div class="w-full bg-stone-700 rounded-full h-1.5 mt-1 overflow-hidden">
+              <div id="statCheeseBar" class="bg-gradient-to-r from-yellow-400 to-amber-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTROLS & FILTERS ================= -->
+  <main class="max-w-6xl mx-auto px-4 mt-4 w-full flex-1">
+    
+    <div class="bg-white rounded-2xl shadow-sm border border-stone-200/80 p-3.5 mb-5 space-y-3">
+      
+      <!-- Search Input + Pavilion Dropdown -->
+      <div class="flex flex-col sm:flex-row gap-2.5">
+        <!-- Search bar -->
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm"></i>
+          <input 
+            type="search" 
+            id="searchInput"
+            placeholder="Search booths (e.g. Canada, Germany), dish names, ingredients, wines..."
+            class="w-full pl-9 pr-8 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-wine-700/30 focus:border-wine-700 transition"
+          >
+          <button id="clearSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 text-sm">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Pavilion/Zone Select -->
+        <div class="sm:w-56">
+          <div class="relative">
+            <select id="pavilionFilter" class="w-full appearance-none bg-stone-50 border border-stone-200 rounded-xl pl-3.5 pr-8 py-2.5 text-sm font-medium text-stone-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-wine-700/30 focus:border-wine-700 transition">
+              <option value="ALL">All Zones & Pavilions</option>
+              <option value="World Showcase">World Showcase (Pavilions)</option>
+              <option value="World Showcase Promenade">World Showcase Promenade</option>
+              <option value="World Celebration">World Celebration</option>
+              <option value="World Nature">World Nature</option>
+              <option value="World Discovery">World Discovery</option>
+            </select>
+            <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Pills: Category & Status -->
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5 pt-1 border-t border-stone-100">
+        
+        <!-- Category Pills (Horizontal scroll for mobile) -->
+        <div class="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1.5 md:pb-0 hide-scrollbar" id="categoryPillContainer">
+          <button data-cat="ALL" class="cat-pill active px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-wine-800 text-white shadow-sm">
+            All Items
+          </button>
+          <button data-cat="Food" class="cat-pill px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-stone-100 text-stone-600 hover:bg-stone-200">
+            <i class="fa-solid fa-utensils text-[10px] mr-1"></i> Food
+          </button>
+          <button data-cat="Dessert" class="cat-pill px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-stone-100 text-stone-600 hover:bg-stone-200">
+            <i class="fa-solid fa-cake-candles text-[10px] mr-1"></i> Dessert
+          </button>
+          <button data-cat="Drink" class="cat-pill px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-stone-100 text-stone-600 hover:bg-stone-200">
+            <i class="fa-solid fa-martini-glass-citrus text-[10px] mr-1"></i> Drinks & Wine
+          </button>
+          <button data-cat="Fromage" class="cat-pill px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition bg-stone-100 text-stone-600 hover:bg-stone-200 border border-amber-300/60">
+            <i class="fa-solid fa-cheese text-amber-500 text-[10px] mr-1"></i> Fromage Montage
+          </button>
+        </div>
+
+        <!-- Status Filter & View toggles -->
+        <div class="flex items-center justify-between w-full md:w-auto gap-2">
+          
+          <!-- Status toggles -->
+          <div class="inline-flex rounded-lg bg-stone-100 p-0.5 text-xs font-semibold text-stone-600" id="statusFilterGroup">
+            <button data-status="ALL" class="status-btn active px-2.5 py-1 rounded-md bg-white text-stone-900 shadow-sm transition">All</button>
+            <button data-status="WANT" class="status-btn px-2.5 py-1 rounded-md hover:text-stone-900 transition flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span> Want
+            </button>
+            <button data-status="TASTED" class="status-btn px-2.5 py-1 rounded-md hover:text-stone-900 transition flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Tasted
+            </button>
+          </div>
+
+          <!-- Expand / Collapse All Accordions -->
+          <div class="flex items-center gap-1 text-xs">
+            <button id="expandAllBtn" class="px-2 py-1 text-stone-500 hover:text-stone-900 rounded hover:bg-stone-100 transition font-medium" title="Expand All Booths">
+              <i class="fa-solid fa-angles-down text-[11px] mr-1"></i>Expand
+            </button>
+            <button id="collapseAllBtn" class="px-2 py-1 text-stone-500 hover:text-stone-900 rounded hover:bg-stone-100 transition font-medium" title="Collapse All Booths">
+              <i class="fa-solid fa-angles-up text-[11px] mr-1"></i>Collapse
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Active Filter Indicator / Results Count -->
+    <div class="flex items-center justify-between mb-3 px-1 text-xs text-stone-500 font-medium">
+      <div id="resultsSummary">Loading global booths...</div>
+      <div class="flex items-center gap-2">
+        <span class="text-stone-400">Total Booths: <strong id="boothCountDisplay" class="text-stone-700 font-bold">0</strong></span>
+      </div>
+    </div>
+
+    <!-- ================= BOOTH GRID / ACCORDION CONTAINER ================= -->
+    <div id="boothContainer" class="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-4 sm:items-start">
+      <!-- Dynamic Booth Cards will render here -->
+    </div>
+
+    <!-- Empty State Message -->
+    <div id="noResultsState" class="hidden text-center py-16 px-4 bg-white rounded-2xl border border-dashed border-stone-300">
+      <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 text-xl">
+        <i class="fa-solid fa-wine-glass"></i>
+      </div>
+      <h3 class="text-base font-bold text-stone-800">No matching festival items found</h3>
+      <p class="text-xs text-stone-500 mt-1 max-w-sm mx-auto">Try clearing your search query, switching categories, or resetting the status filter.</p>
+      <button id="resetFiltersBtn" class="mt-4 px-4 py-2 bg-wine-800 text-white rounded-xl text-xs font-semibold hover:bg-wine-700 transition">
+        Reset All Filters
+      </button>
+    </div>
+
+  </main>
+
+  <!-- ================= MODALS & TOASTS ================= -->
+  
+  <!-- Reset Confirmation Modal -->
+  <div id="confirmResetModal" class="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-stone-200 transform transition-all">
+      <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3 text-lg">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 class="text-base font-bold text-center text-stone-900">Reset Festival Tracker?</h3>
+      <p class="text-xs text-stone-500 text-center mt-1.5 leading-relaxed">
+        This will clear all your saved ratings, "Want to Try" wishlists, and "Tasted" records from this device.
+      </p>
+      <div class="flex items-center gap-2 mt-5">
+        <button id="cancelResetBtn" class="flex-1 py-2.5 rounded-xl border border-stone-200 text-stone-600 font-semibold text-xs hover:bg-stone-50 transition">Cancel</button>
+        <button id="confirmResetBtn" class="flex-1 py-2.5 rounded-xl bg-rose-600 text-white font-semibold text-xs hover:bg-rose-700 transition shadow-sm">Yes, Reset All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export/Share Modal -->
+  <div id="exportModal" class="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-stone-200">
+      <div class="flex items-center justify-between pb-3 border-b border-stone-100">
+        <h3 class="text-sm font-bold text-stone-900 flex items-center gap-2">
+          <i class="fa-solid fa-clipboard-check text-wine-700"></i> Festival Summary & Wishlist
+        </h3>
+        <button id="closeExportModal" class="text-stone-400 hover:text-stone-600 text-sm">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="mt-3">
+        <p class="text-xs text-stone-500 mb-2">Copy this checklist text to share with your festival friends or keep in notes:</p>
+        <textarea id="exportTextarea" rows="8" readonly class="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-[11px] font-mono text-stone-700 focus:outline-none focus:ring-1 focus:ring-wine-700"></textarea>
+      </div>
+      <div class="mt-4 flex items-center justify-end gap-2">
+        <button id="copyExportBtn" class="px-4 py-2 bg-wine-800 text-white rounded-xl text-xs font-semibold hover:bg-wine-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-copy"></i> Copy to Clipboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Emile's Prize Completion Banner Toast (Floating) -->
+  <div id="fromageBadgeToast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-amber-500 text-stone-900 font-bold px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2 text-xs border-2 border-white transform transition duration-500 translate-y-24 opacity-0 pointer-events-none z-50">
+    <span class="text-base">🧀🏆</span>
+    <span>Fromage Montage Complete! Head to Shimmering Sips for your Prize!</span>
+  </div>
+
+  <!-- Toast Notification Message -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 bg-stone-900 text-white text-xs font-medium px-3.5 py-2 rounded-xl shadow-xl border border-stone-700 transform transition-all duration-300 translate-y-16 opacity-0 pointer-events-none z-50 flex items-center gap-2">
+    <i class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toastMessage">Saved</span>
+  </div>
+
+  <!-- ================= FESTIVAL DATA & JAVASCRIPT ================= -->
+  <script>
+    /* -------------------------------------------------------------
+       COMPLETE 40-BOOTH FESTIVAL DATASET (Curated with exact prices,
+       categories, locations, and Emile's Fromage Montage indicators)
+       ------------------------------------------------------------- */
+    const FESTIVAL_BOOTHS = [
+      {
+        id: "appleseed-orchard",
+        name: "Appleseed Orchard",
+        pavilion: "World Showcase",
+        subLocation: "Canada Pavilion (Circlevision 360 Theater)",
+        mapNumber: "#36",
+        items: [
+          { id: "ao_1", name: "Caramel Apple Crumble Tart", category: "Dessert", price: 4.75, description: "Warm spiced apple compote with golden oat streusel topping and rich caramel drizzle.", fromageMontage: false },
+          { id: "ao_2", name: "Frozen Apple Pie Slush (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 4.75, description: "Refreshing tart-sweet apple cider slush with cinnamon streusel crumble rim.", fromageMontage: false },
+          { id: "ao_3", name: "Spiced Apple Rum Old Fashioned", category: "Drink", subType: "Cocktail", price: 12.50, description: "Boyd & Blair craft rum stirred with spiced apple cider syrup, bitters, and orange twist.", fromageMontage: false },
+          { id: "ao_4", name: "Ciderboys Pumpkin Spice Hard Cider", category: "Drink", subType: "Cider", price: 6.00, description: "Wisconsin craft cider infused with pumpkin pie spices, cinnamon, and nutmeg.", fromageMontage: false },
+          { id: "ao_5", name: "BrewDog Hazy Jane IPA", category: "Drink", subType: "Beer", price: 6.00, description: "Smooth, juicy Vermont-style hazy IPA bursting with citrus, pineapple, and mango.", fromageMontage: false },
+          { id: "ao_6", name: "Harvest Ale & Cider Flight", category: "Drink", subType: "Flight", price: 12.75, description: "Four-glass tasting flight featuring seasonal autumn craft beers and ciders.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "australia",
+        name: "Australia",
+        pavilion: "World Showcase",
+        subLocation: "Near Port of Entry",
+        mapNumber: "#7",
+        items: [
+          { id: "au_1", name: "Grilled Bushberry-Spiced Shrimp Skewer", category: "Food", price: 6.99, description: "Served with sweet-and-sour vegetable slaw and coconut-chili glaze.", fromageMontage: false },
+          { id: "au_2", name: "Roasted Lamb Chop", category: "Food", price: 8.79, description: "Tender grilled Australian lamb chop topped with mint pesto and crushed salt & vinegar potato crunch.", fromageMontage: false },
+          { id: "au_3", name: "Mixed Berry Pavlova", category: "Dessert", price: 4.99, description: "Traditional crisp meringue shell filled with whipped cream and macerated seasonal berries.", fromageMontage: false },
+          { id: "au_4", name: "Bulletin Place Sauvignon Blanc", category: "Drink", subType: "Wine", price: 6.50, description: "Bright crisp Australian white with gooseberry, citrus blossom, and lemongrass finish.", fromageMontage: false },
+          { id: "au_5", name: "Yalumba 'The Y Series' Viognier", category: "Drink", subType: "Wine", price: 6.50, description: "Aromatic South Australian white with honeysuckle, white peach, and gentle ginger notes.", fromageMontage: false },
+          { id: "au_6", name: "Fowles Farm to Table Shiraz", category: "Drink", subType: "Wine", price: 7.50, description: "Victoria Shiraz featuring dark plum, blackberry compote, and fresh cracked pepper.", fromageMontage: false },
+          { id: "au_7", name: "Australian Wine Flight", category: "Drink", subType: "Flight", price: 7.50, description: "Tasting trio of Viognier, Sauvignon Blanc, and Shiraz.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "belgium",
+        name: "Belgium",
+        pavilion: "World Showcase",
+        subLocation: "Between France and Morocco",
+        mapNumber: "#21",
+        items: [
+          { id: "be_1", name: "Beer-Braised Beef Stew", category: "Food", price: 6.79, description: "Tender beef simmered in Belgian ale, served over creamy smoked gouda mashed potatoes.", fromageMontage: false },
+          { id: "be_2", name: "Belgian Waffle with Berry Compote & Whipped Cream", category: "Dessert", price: 5.50, description: "Fresh made-to-order pearl sugar waffle topped with warm berry compote and whipped cream.", fromageMontage: false },
+          { id: "be_3", name: "Belgian Waffle with Cookie Butter and Whipped Cream", category: "Dessert", price: 5.49, description: "Fresh golden waffle topped with warm speculoos cookie butter and crunchy cookie crumbles.", fromageMontage: false },
+          { id: "be_4", name: "Chilled Belgian Coffee with Liqueur", category: "Drink", subType: "Cocktail", price: 12.50, description: "Chilled artisan roast coffee infused with Belgian chocolate and hazelnut cream liqueur.", fromageMontage: false },
+          { id: "be_5", name: "Chilled Belgian Coffee (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 5.00, description: "Artisan cold roast coffee blended with sweet cream.", fromageMontage: false },
+          { id: "be_6", name: "Brouwerij Verhaeghe Duchesse Red Tart Cherry Ale", category: "Drink", subType: "Beer", price: 6.00, description: "Traditional Flemish sour red ale macerated with whole tart Belgian cherries.", fromageMontage: false },
+          { id: "be_7", name: "Van Steenberge Piraat 7 Strong Ale", category: "Drink", subType: "Beer", price: 6.00, description: "Golden Belgian strong pale ale with spicy hop bite and complex malt character.", fromageMontage: false },
+          { id: "be_8", name: "Belgian Beer Flight", category: "Drink", subType: "Flight", price: 12.75, description: "Flight of authentic Belgian specialty, sour, and strong abbey ales.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "block-and-hans",
+        name: "Block & Hans",
+        pavilion: "World Showcase",
+        subLocation: "American Adventure Pavilion",
+        mapNumber: "American Adventure (Permanent)",
+        items: [
+          { id: "bh_1", name: "Large Soft Pretzel with Beer Cheese", category: "Food", price: 8.79, description: "Warm salted jumbo Bavarian soft pretzel served with house-made creamy pub beer cheese fondue. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "bh_2", name: "Spicy Strawberry-Mango Smoothie (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 5.99, description: "Chilled strawberry-mango fruit smoothie dusted with a tangy zesty kick of Tajín seasoning.", fromageMontage: false },
+          { id: "bh_3", name: "Kentucky Bourbon Barrel Ale", category: "Drink", subType: "Beer", price: 13.25, description: "Rich, complex English-style ale aged in charred Kentucky bourbon barrels.", fromageMontage: false },
+          { id: "bh_4", name: "Sierra Nevada Hazy Little Thing IPA", category: "Drink", subType: "Beer", price: 12.50, description: "Unfiltered, unprocessed hazy IPA straight from the tanks with tropical fruit notes.", fromageMontage: false },
+          { id: "bh_5", name: "Orange Blossom Brewing Pilsner", category: "Drink", subType: "Beer", price: 13.25, description: "Crisp, clean local Florida pilsner brewed with real orange blossom honey.", fromageMontage: false },
+          { id: "bh_6", name: "Golden Road Brewing Mango Cart Wheat Ale", category: "Drink", subType: "Beer", price: 13.25, description: "Light wheat ale bursting with real mango flavor and crisp tart finish.", fromageMontage: false },
+          { id: "bh_7", name: "Ciderboys Strawberry Magic Hard Cider", category: "Drink", subType: "Cider", price: 14.00, description: "Sweet, juicy hard apple cider fermented with fresh ripe strawberries.", fromageMontage: false },
+          { id: "bh_8", name: "Owl's Brew Spiced Chai & Cranberry Hard Tea", category: "Drink", subType: "Cocktail", price: 13.00, description: "Organic brewed black tea with chai spices, tart cranberry, and clean botanical spirit.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "bramblewood-bites",
+        name: "Bramblewood Bites",
+        pavilion: "World Nature",
+        subLocation: "Between Imagination and Canada",
+        mapNumber: "#30",
+        items: [
+          { id: "bb_1", name: "Grilled Cider-Brined Pork Tenderloin", category: "Food", price: 7.19, description: "Served with chili-apple butter, shaved celeriac slaw, and spiced apple cider gastrique.", fromageMontage: false },
+          { id: "bb_2", name: "Cast Iron-Seared River Trout", category: "Food", price: 7.29, description: "Pan-seared river trout over autumn root vegetable hash with brown herb butter.", fromageMontage: false },
+          { id: "bb_3", name: "Brûléed Sweet Potatoes", category: "Food", price: 4.99, description: "Candied sweet potatoes with caramelized turbinado brown sugar crust and toasted pecans.", fromageMontage: false },
+          { id: "bb_4", name: "Crooked Can Banana Bread German Style Wheat Beer", category: "Drink", subType: "Beer", price: 6.00, description: "Local Florida wheat ale loaded with natural banana, clove, and warm bread malts.", fromageMontage: false },
+          { id: "bb_5", name: "Spiced Apple Rum Old Fashioned", category: "Drink", subType: "Cocktail", price: 12.50, description: "Boyd & Blair rum with spiced apple cider syrup, aromatic bitters, and candied orange peel.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "brazil",
+        name: "Brazil",
+        pavilion: "World Showcase",
+        subLocation: "Between France and United Kingdom",
+        mapNumber: "#22",
+        items: [
+          { id: "br_1", name: "Pão de Queijo (Brazilian Cheese Bread)", category: "Food", price: 5.00, description: "Warm, chewy gluten-friendly tapioca cheese rolls. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "br_2", name: "Feijoada: Black Bean Stew with Pork & Rice", category: "Food", price: 6.50, description: "Savory black bean stew with braised pork belly, Brazil nut pesto, and crisp puffed rice.", fromageMontage: false },
+          { id: "br_3", name: "Moqueca de Camarão", category: "Food", price: 7.50, description: "Plancha-seared shrimp in coconut milk, sweet peppers, and tomato broth over long-grain rice.", fromageMontage: false },
+          { id: "br_4", name: "Frozen Caipirinha", category: "Drink", subType: "Cocktail", price: 12.00, description: "Brazil's national cocktail made with Leblon Cachaça, fresh lime juice, and cane sugar.", fromageMontage: false },
+          { id: "br_5", name: "BrewDog Brewing Peach Mango Wheat Ale", category: "Drink", subType: "Beer", price: 6.00, description: "Crisp session wheat beer infused with juicy ripe peach and mango aromas.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "brew-wing-lab",
+        name: "Brew-Wing Lab at the Odyssey",
+        pavilion: "World Celebration",
+        subLocation: "The Odyssey Building",
+        mapNumber: "#6",
+        items: [
+          { id: "bw_1", name: "Buffalo-Dill Pickle Wings", category: "Food", price: 7.75, description: "Crispy chicken wings tossed in tangy zesty pickle-infused Buffalo cayenne sauce with celery.", fromageMontage: false },
+          { id: "bw_2", name: "Garlic-Parmesan Wings", category: "Food", price: 7.79, description: "Crispy wings tossed with roasted garlic butter, shaved pecorino, and aged parmesan.", fromageMontage: false },
+          { id: "bw_3", name: "Korean Barbecue Wings", category: "Food", price: 7.79, description: "Tossed in sticky sweet-spicy gochujang barbecue glaze and toasted sesame seeds.", fromageMontage: false },
+          { id: "bw_4", name: "Carolina Reaper Pepper-Curry Wings", category: "Food", price: 7.79, description: "Unnecessarily spicy yet extremely tasty wings balanced with creamy cucumber raita.", fromageMontage: false },
+          { id: "bw_5", name: "Fried Pickle Spears", category: "Food", price: 5.79, description: "Golden fried dill pickle spears served with house-made dill buttermilk ranch.", fromageMontage: false },
+          { id: "bw_6", name: "Sweet Chile-Lime Plant-Based Strips", category: "Food", price: 7.79, description: "Plant-based crispy tenders tossed with sweet chili-lime glaze and cilantro crema.", fromageMontage: false },
+          { id: "bw_7", name: "Pickle Milk Shake (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 5.99, description: "The internet sensation! Sweet vanilla shake blended with dill pickle brine and herbs.", fromageMontage: false },
+          { id: "bw_8", name: "Frozen Pomegranate & Raspberry Tea", category: "Drink", subType: "Non-Alcoholic", price: 5.19, description: "Twinings herbal tea blend topped with orange ice cream molecules.", fromageMontage: false },
+          { id: "bw_9", name: "Civil Society Brewing Everyday I'm Waffle'n IPA", category: "Drink", subType: "Beer", price: 6.00, description: "Hazy IPA brewed with breakfast-inspired waffle aromatics and citrus hops.", fromageMontage: false },
+          { id: "bw_10", name: "3 Daughters Brewing Peanut Butter Blondie Ale", category: "Drink", subType: "Beer", price: 6.00, description: "Smooth blonde ale accented with rich roasted peanut butter notes.", fromageMontage: false },
+          { id: "bw_11", name: "Ciderboys Pumpkin Spice Hard Cider", category: "Drink", subType: "Cider", price: 6.00, description: "Wisconsin hard apple cider with pumpkin pie spice and brown sugar.", fromageMontage: false },
+          { id: "bw_12", name: "Brew-Wing Draft Beer Flight", category: "Drink", subType: "Flight", price: 12.75, description: "Tasting flight featuring four unique festival craft beers and specialty ciders.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "canada",
+        name: "Canada",
+        pavilion: "World Showcase",
+        subLocation: "Canada Pavilion Promenade",
+        mapNumber: "#24",
+        items: [
+          { id: "ca_1", name: "Canadian Cheddar and Bacon Soup", category: "Food", price: 6.25, description: "Served with a warm pretzel roll; Le Cellier signature recipe. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "ca_2", name: "\"Le Cellier\" Wild Mushroom Beef Filet Mignon", category: "Food", price: 9.75, description: "Tender Canadian AAA beef filet mignon with truffle-butter sauce and wild mushrooms.", fromageMontage: false },
+          { id: "ca_3", name: "Spiced Apple Slushy (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 6.29, description: "Frozen ginger beer blended with lively lime and cozy spiced apple cider.", fromageMontage: false },
+          { id: "ca_4", name: "Spiced Apple Mule with Iceberg Canadian Vodka", category: "Drink", subType: "Cocktail", price: 14.50, description: "Spiced apple frozen ginger beer with Canadian vodka and lime wheel.", fromageMontage: false },
+          { id: "ca_5", name: "Collective Arts Brewing Festbier", category: "Drink", subType: "Beer", price: 6.00, description: "Ontario craft Oktoberfest festbier with delicate biscuit malt and herbal hops.", fromageMontage: false },
+          { id: "ca_6", name: "Château des Charmes Pétales Rouge", category: "Drink", subType: "Wine", price: 9.50, description: "Niagara Peninsula red blend offering ripe dark cherries, plum, and soft oak.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "canada-popcorn-cart",
+        name: "Canada Popcorn Cart",
+        pavilion: "World Showcase",
+        subLocation: "Canada Pavilion Boardwalk",
+        mapNumber: "Canada Popcorn (Permanent)",
+        items: [
+          { id: "cp_1", name: "Cheddar Cheese Bacon Popcorn", category: "Food", price: 6.50, description: "Freshly popped warm popcorn seasoned with savory aged cheddar and real smoky bacon bits. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "cp_2", name: "Canadian Maple Popcorn", category: "Food", price: 7.29, description: "Handcrafted kettle popcorn coated in pure sweet Canadian maple syrup glaze.", fromageMontage: false },
+          { id: "cp_3", name: "Souvenir Refillable Popcorn Bucket", category: "Food", price: 15.29, description: "Collectible Disney souvenir popcorn bucket with your first fill included.", fromageMontage: false },
+          { id: "cp_4", name: "Northern Ruby Specialty Cocktail", category: "Drink", subType: "Cocktail", price: 17.50, description: "Crown Royal Canadian whisky shaken with grapefruit juice, pomegranate liqueur, and club soda.", fromageMontage: false },
+          { id: "cp_5", name: "Ottawa Apple Cocktail", category: "Drink", subType: "Cocktail", price: 17.00, description: "Crown Royal whisky, apple schnapps, cranberry juice, and ginger ale.", fromageMontage: false },
+          { id: "cp_6", name: "Moosehead Canadian Lager Draft", category: "Drink", subType: "Beer", price: 11.50, description: "Classic, crisp Canadian mountain lager brewed with 100% Canadian barley malt.", fromageMontage: false },
+          { id: "cp_7", name: "Collective Arts Hazy State IPA", category: "Drink", subType: "Beer", price: 13.25, description: "Ontario double dry-hopped session IPA packed with Amarillo, Citra, and Mosaic hops.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "china",
+        name: "China",
+        pavilion: "World Showcase",
+        subLocation: "China Pavilion Courtyard",
+        mapNumber: "#9",
+        items: [
+          { id: "ch_1", name: "Smoked Duck Bao Bun", category: "Food", price: 8.25, description: "Slow-roasted smoked duck with cucumber, scallion, and hoisin sauce in a warm lotus bun.", fromageMontage: false },
+          { id: "ch_2", name: "Pan-Fried Dumplings Trio", category: "Food", price: 7.35, description: "Three classic pork and vegetable dumplings pan-fried golden with seasoned soy vinegar dip.", fromageMontage: false },
+          { id: "ch_3", name: "Beijing Zhajiang Noodles", category: "Food", price: 8.50, description: "Minced beef, cucumber, fresh chili, and carrots tossed in savory douban fermented bean sauce.", fromageMontage: false },
+          { id: "ch_4", name: "Mango-Peach Bubble Tea (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 7.95, description: "Jasmine green tea with sweet mango and peach syrups paired with white boba pearls.", fromageMontage: false },
+          { id: "ch_5", name: "Baijiu Punch", category: "Drink", subType: "Cocktail", price: 14.25, description: "Potent Chinese Baijiu spirit, lychee syrup, soda water, and piña colada cream.", fromageMontage: false },
+          { id: "ch_6", name: "Hainan Prosperity Cocktail", category: "Drink", subType: "Cocktail", price: 14.25, description: "Tequila, vodka, orange juice, and mango syrup with lemon garnish.", fromageMontage: false },
+          { id: "ch_7", name: "Frozen Strawberry-Jasmine Cocktail", category: "Drink", subType: "Cocktail", price: 14.00, description: "Light rum blended with aromatic jasmine floral tea and sweet strawberry purée.", fromageMontage: false },
+          { id: "ch_8", name: "Honghe Rice Lager Draft Beer", category: "Drink", subType: "Beer", price: 6.00, description: "Crisp and dry New Hampshire craft rice lager brewed in traditional Asian style.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "coastal-eats",
+        name: "Coastal Eats",
+        pavilion: "World Discovery",
+        subLocation: "Near Creations Shop",
+        mapNumber: "#2",
+        items: [
+          { id: "ce_1", name: "Lump Crab Cake with Cajun-Spiced Remoulade", category: "Food", price: 7.75, description: "Pan-seared jumbo lump blue crab cake on crisp sweet vinegar slaw.", fromageMontage: false },
+          { id: "ce_2", name: "Seafood Pot Pie", category: "Food", price: 7.49, description: "Shrimp, bay scallops, and lobster bisque under a golden, buttery puff pastry shell.", fromageMontage: false },
+          { id: "ce_3", name: "Boyd & Blair Pomegranate Codder", category: "Drink", subType: "Cocktail", price: 12.50, description: "Craft Pennsylvania vodka cocktail with tart pomegranate and Cape Cod cranberry juice.", fromageMontage: false },
+          { id: "ce_4", name: "Rileys Lookout Sauvignon Blanc", category: "Drink", subType: "Wine", price: 6.50, description: "Marlborough New Zealand white with passion fruit, fresh lime, and grassy zest.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "connections-cafe",
+        name: "Connections Café",
+        pavilion: "World Celebration",
+        subLocation: "Connections Plaza",
+        mapNumber: "Connections (Permanent)",
+        items: [
+          { id: "cc_1", name: "Pistachio-Chocolate Mochi Doughnut", category: "Dessert", price: 4.99, description: "Chewy mochi doughnut topped with rich chocolate ganache and roasted chopped pistachios.", fromageMontage: false },
+          { id: "cc_2", name: "Liege Waffle with Pearl Sugar", category: "Dessert", price: 4.49, description: "Warm brioche Liege waffle baked with caramelized Belgian pearl sugar.", fromageMontage: false },
+          { id: "cc_3", name: "Shakerato Double Espresso", category: "Drink", subType: "Non-Alcoholic", price: 4.79, description: "Double shot of espresso shaken vigorously over ice with vanilla bean syrup.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "connections-eatery",
+        name: "Connections Eatery",
+        pavilion: "World Celebration",
+        subLocation: "Connections Building",
+        mapNumber: "Connections (Permanent)",
+        items: [
+          { id: "ceat_1", name: "BBQ Braai Chicken Pizza", category: "Food", price: 7.99, description: "Hand-tossed pizza with sweet tamarind BBQ sauce, piri piri, arugula, and mozzarella.", fromageMontage: false },
+          { id: "ceat_2", name: "Caramel-Apple Cheesecake Baumkuchen", category: "Dessert", price: 5.49, description: "Layered German spit cake with creamy cheesecake filling and warm spiced caramel apples.", fromageMontage: false },
+          { id: "ceat_3", name: "Frozen Waffle Old Fashioned", category: "Drink", subType: "Cocktail", price: 12.50, description: "Bourbon cocktail with maple syrup, toasted waffle notes, and aromatic bitters.", fromageMontage: false },
+          { id: "ceat_4", name: "Watermelon-Mint Agua Fresca", category: "Drink", subType: "Non-Alcoholic", price: 4.99, description: "Chilled fresh watermelon juice infused with garden mint and lime.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "earth-eats",
+        name: "Earth Eats",
+        pavilion: "World Nature",
+        subLocation: "Near The Land Pavilion",
+        mapNumber: "#31",
+        items: [
+          { id: "ee_1", name: "Red Wine-Braised Beef Short Rib", category: "Food", price: 8.49, description: "Tender braised beef short rib served over creamy goat cheese polenta and shaved pecorino. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "ee_2", name: "Lemon-Almond-Olive Oil Cake", category: "Dessert", price: 4.49, description: "Served with whipped Greek yogurt panna cotta and wild berry coulis.", fromageMontage: false },
+          { id: "ee_3", name: "Minute Maid Aguas Frescas – Strawberry Hibiscus", category: "Drink", subType: "Non-Alcoholic", price: 4.50, description: "Refreshing non-alcoholic agua fresca blending ripe strawberry and tart hibiscus petals.", fromageMontage: false },
+          { id: "ee_4", name: "Harken Barrel Fermented Chardonnay", category: "Drink", subType: "Wine", price: 6.50, description: "Rich, buttery California Chardonnay with toasted vanilla and baked pear notes.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "festival-favorites",
+        name: "Festival Favorites",
+        pavilion: "World Celebration",
+        subLocation: "CommuniCore Plaza",
+        mapNumber: "#32",
+        items: [
+          { id: "ffav_1", name: "Pumpkin Cheesecake Mousse Trifle", category: "Dessert", price: 5.29, description: "Philadelphia cream cheese mousse, spice cake, and cranberry-pecan streusel. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "ffav_2", name: "Potato Pierogi with Kielbasa", category: "Food", price: 5.99, description: "Crisp potato and cheese pierogi served with caramelized onions, smoked kielbasa, and sour cream.", fromageMontage: false },
+          { id: "ffav_3", name: "Bo Ssam Pork Belly Lettuce Wraps", category: "Food", price: 6.19, description: "Tender pork belly with crunchy kimchi slaw and spicy Korean gochujang aïoli.", fromageMontage: false },
+          { id: "ffav_4", name: "Frozen S'mores Shake (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 5.29, description: "Chocolate shake with toasted marshmallow syrup, graham cracker crumble, and chocolate drizzle.", fromageMontage: false },
+          { id: "ffav_5", name: "Frozen Apple Blossom Cocktail", category: "Drink", subType: "Cocktail", price: 16.50, description: "Apple cider, VSOP brandy, ginger ale, marshmallows, and maple syrup.", fromageMontage: false },
+          { id: "ffav_6", name: "Schöfferhofer Grapefruit Hefeweizen", category: "Drink", subType: "Beer", price: 6.00, description: "Crisp German wheat beer naturally blended with tangy pink grapefruit juice.", fromageMontage: false },
+          { id: "ffav_7", name: "3 Daughters Brewing Beach Blonde Ale", category: "Drink", subType: "Beer", price: 6.00, description: "Light, refreshing Florida craft blonde ale with subtle biscuit malt finish.", fromageMontage: false },
+          { id: "ffav_8", name: "Festival Favorites Beer Flight", category: "Drink", subType: "Flight", price: 12.75, description: "Four-glass flight sampling beloved guest-favorite festival draft beers.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "flavors-from-fire",
+        name: "Flavors from Fire",
+        pavilion: "World Discovery",
+        subLocation: "Near Test Track",
+        mapNumber: "#4",
+        items: [
+          { id: "fff_1", name: "Smoked Corned Beef on Crispy Potato Waffle", category: "Food", price: 6.50, description: "House-smoked corned beef with pickled onions and warm pub beer cheese fondue.", fromageMontage: false },
+          { id: "fff_2", name: "The Chimichurri Skirt Steak Taco", category: "Food", price: 6.50, description: "Charred skirt steak with sweet corn salsa and fresh chimichurri on a corn tortilla.", fromageMontage: false },
+          { id: "fff_3", name: "Rodizio-Style Grilled Beef Skewer", category: "Food", price: 6.99, description: "With marble potatoes, charred shallots, roasted baby peppers, and herb chimichurri.", fromageMontage: false },
+          { id: "fff_4", name: "Smoked Chocolate Bread Pudding", category: "Dessert", price: 5.25, description: "Rich chocolate bread pudding with vanilla bean bourbon sauce and sea salt.", fromageMontage: false },
+          { id: "fff_5", name: "Swine Brine Bourbon Cocktail", category: "Drink", subType: "Cocktail", price: 13.00, description: "Bourbon, apple-cinnamon cider, lemon juice, and Dijon mustard garnished with a pork wing.", fromageMontage: false },
+          { id: "fff_6", name: "Left Hand Brewing Co. Sawtooth Amber Ale", category: "Drink", subType: "Beer", price: 6.00, description: "Classic balanced Colorado amber ale with nutty malt and herbal hops.", fromageMontage: false },
+          { id: "fff_7", name: "1000 Stories Bourbon Barrel-Aged Zinfandel", category: "Drink", subType: "Wine", price: 6.50, description: "Bold California Zinfandel aged in bourbon barrels with ripe dark berry and vanilla notes.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "forest-and-field",
+        name: "Forest & Field",
+        pavilion: "World Nature",
+        subLocation: "Between Imagination and World Showcase",
+        mapNumber: "#28",
+        items: [
+          { id: "faf_1", name: "Pumpkin-Mascarpone Ravioli", category: "Food", price: 5.49, description: "Savory ravioli with brown butter, whipped mascarpone, and toasted pumpkin seeds.", fromageMontage: false },
+          { id: "faf_2", name: "Schiacciata Sandwich", category: "Food", price: 6.29, description: "Italian flatbread stuffed with seasonal cured fillings and herb tapenade.", fromageMontage: false },
+          { id: "faf_3", name: "Spicy Black Bean-Mushroom Chili (Plant-Based)", category: "Food", price: 5.99, description: "Savory plant-based chili topped with spiced crema and scallions.", fromageMontage: false },
+          { id: "faf_4", name: "Brewery Ommegang All Hallows Treat Imperial Stout", category: "Drink", subType: "Beer", price: 6.00, description: "Decadent New York imperial chocolate peanut butter cup stout.", fromageMontage: false },
+          { id: "faf_5", name: "Famille Hugel Classic Pinot Noir", category: "Drink", subType: "Wine", price: 7.00, description: "Elegant Alsatian Pinot Noir featuring wild strawberry and delicate earthy tannin.", fromageMontage: false },
+          { id: "faf_6", name: "Daou Vineyards Reserve Chardonnay", category: "Drink", subType: "Wine", price: 6.50, description: "Paso Robles Chardonnay with crisp green apple, pineapple, and subtle toasted oak.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "france",
+        name: "France",
+        pavilion: "World Showcase",
+        subLocation: "France Pavilion Waterfront",
+        mapNumber: "#23",
+        items: [
+          { id: "fr_1", name: "Beignet aux Trois Fromages", category: "Food", price: 6.95, description: "Warm flaky beignet stuffed with goat, cheddar, and brie cheeses. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "fr_2", name: "Boeuf Bourguignon / Boeuf Braisé au Vin Rouge", category: "Food", price: 9.50, description: "Red wine-braised short ribs with shallot confit and buttery potato gâteau.", fromageMontage: false },
+          { id: "fr_3", name: "Croissant aux Escargots", category: "Food", price: 7.95, description: "Escargots baked in a flaky puff pastry croissant with garlic and parsley butter.", fromageMontage: false },
+          { id: "fr_4", name: "Crème Brûlée Pistache", category: "Dessert", price: 7.95, description: "Caramelized pistachio crème brûlée with berry compote and crisp sugar crust.", fromageMontage: false },
+          { id: "fr_5", name: "La Passion Martini Slush", category: "Drink", subType: "Cocktail", price: 14.50, description: "Vodka, Grey Goose Le Citron, cranberry, and passion fruit juice slush.", fromageMontage: false },
+          { id: "fr_6", name: "Chilled French Cosmo", category: "Drink", subType: "Cocktail", price: 14.50, description: "Vodka, Grey Goose Le Citron, Grand Marnier, and Simply Cranberry juice.", fromageMontage: false },
+          { id: "fr_7", name: "Plaimont ELIA Colombard Dry White", category: "Drink", subType: "Wine", price: 6.50, description: "Fresh, zesty French white with citrus blossom aromas and crisp minerality.", fromageMontage: false },
+          { id: "fr_8", name: "La Roche Prestige Cuvée Sparkling", category: "Drink", subType: "Wine", price: 9.50, description: "Sparkling French cuvée with vibrant fine bubbles and elegant fruit expression.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "funnel-cake",
+        name: "Funnel Cake",
+        pavilion: "World Showcase",
+        subLocation: "The American Adventure Pavilion",
+        mapNumber: "#17",
+        items: [
+          { id: "fc_1", name: "Pumpkin Pie Funnel Cake (Festival Special)", category: "Dessert", price: 12.50, description: "Warm funnel cake topped with pumpkin pie ice cream, whipped cream, chocolate sauce, cinnamon streusel, and powdered sugar.", fromageMontage: false },
+          { id: "fc_2", name: "Cookies 'n Cream Funnel Cake", category: "Dessert", price: 15.00, description: "Crispy funnel cake topped with powdered sugar, vanilla ice cream, crushed chocolate sandwich cookies, and chocolate drizzle.", fromageMontage: false },
+          { id: "fc_3", name: "Funnel Cake with Vanilla Ice Cream", category: "Dessert", price: 13.50, description: "Traditional golden fried funnel cake dusted with powdered sugar and a scoop of rich vanilla ice cream.", fromageMontage: false },
+          { id: "fc_4", name: "Funnel Cake with Whipped Cream", category: "Dessert", price: 12.00, description: "Classic hot funnel cake generously piled high with sweet fluffy whipped cream.", fromageMontage: false },
+          { id: "fc_5", name: "Funnel Cake with Chocolate Sauce", category: "Dessert", price: 11.50, description: "Fresh hot funnel cake drizzled with warm, rich dark chocolate fudge sauce.", fromageMontage: false },
+          { id: "fc_6", name: "Classic Funnel Cake with Powdered Sugar", category: "Dessert", price: 10.00, description: "Traditional golden-brown crispy carnival funnel cake dusted with sweet powdered sugar.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "germany",
+        name: "Germany",
+        pavilion: "World Showcase",
+        subLocation: "Germany Pavilion Promenade",
+        mapNumber: "#13",
+        items: [
+          { id: "de_1", name: "Schinkennudeln (Pasta Gratin with Ham & Cheese)", category: "Food", price: 5.25, description: "Baked pasta gratin with smoked ham, onions, and rich Swiss-Gruyère sauce. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "de_2", name: "Bratwurst on a Pretzel Roll", category: "Food", price: 6.25, description: "Juicy Bavarian grilled pork bratwurst served warm on a soft pretzel roll with spicy mustard.", fromageMontage: false },
+          { id: "de_3", name: "Wiener Schnitzel", category: "Food", price: 7.29, description: "Breaded cutlet with HEINZ Brauhaus mustard, warm Yukon potato salad, and bacon lardons.", fromageMontage: false },
+          { id: "de_4", name: "Warm Apple Strudel", category: "Dessert", price: 4.99, description: "Delicate layered pastry filled with spiced orchard apples, raisins, and rich vanilla anglaise.", fromageMontage: false },
+          { id: "de_5", name: "Schöfferhofer Orange Spritz Hefeweizen", category: "Drink", subType: "Beer", price: 6.00, description: "Refreshing German wheat beer blended with sparkling sweet and bitter orange.", fromageMontage: false },
+          { id: "de_6", name: "von Trapp Brewing Oktoberfest Märzen Lager", category: "Drink", subType: "Beer", price: 6.00, description: "Smooth Bavarian-style lager with toasty caramel malts and crisp noble hops.", fromageMontage: false },
+          { id: "de_7", name: "Selbach-Oster Mosel Riesling", category: "Drink", subType: "Wine", price: 9.00, description: "Off-dry Mosel German Riesling with apricot, slate minerality, and crisp balancing acidity.", fromageMontage: false },
+          { id: "de_8", name: "German Draft Beer Flight", category: "Drink", subType: "Flight", price: 12.75, description: "Flight featuring Orange Spritz Hefeweizen, Festbier, and Oktoberfest Märzen.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "greece",
+        name: "Greece",
+        pavilion: "World Showcase",
+        subLocation: "Between Morocco and France",
+        mapNumber: "#19",
+        items: [
+          { id: "gr_1", name: "Griddled Greek Cheese with Pistachios and Honey", category: "Food", price: 5.00, description: "Sizzling Halloumi cheese drizzled with wild blossom thyme honey and crushed pistachios. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "gr_2", name: "Chicken Souvlaki Gyro", category: "Food", price: 6.99, description: "Warm pita with seasoned grilled chicken, garlic tzatziki, and crisp cucumber-tomato salad.", fromageMontage: false },
+          { id: "gr_3", name: "Spanakopita: Spinach & Feta Pie", category: "Food", price: 5.00, description: "Traditional crisp phyllo pastry triangles stuffed with spinach, herbs, and tangy Greek feta.", fromageMontage: false },
+          { id: "gr_4", name: "Greek Melon Limeade Cocktail", category: "Drink", subType: "Cocktail", price: 12.00, description: "Kleos Mastiha spirit, Artonic melon apéritif, Pearl vodka, and lime sour mix.", fromageMontage: false },
+          { id: "gr_5", name: "Mylonas Winery Assyrtiko Dry White", category: "Drink", subType: "Wine", price: 6.50, description: "Crisp indigenous Greek white wine with lemony zest, mineral salinity, and flint.", fromageMontage: false },
+          { id: "gr_6", name: "Kir-Yianni Naoussa Xinomavro Dry Red", category: "Drink", subType: "Wine", price: 7.50, description: "Northern Greek dry red with savory sundried tomato, dark cherry, and firm structure.", fromageMontage: false },
+          { id: "gr_7", name: "Zoe Rosé", category: "Drink", subType: "Wine", price: 6.50, description: "Aromatic Peloponnese rosé featuring floral rose petal, cherry, and citrus zest.", fromageMontage: false },
+          { id: "gr_8", name: "Greek Wine Flight", category: "Drink", subType: "Flight", price: 7.50, description: "Flight offering tastings of Assyrtiko, Zoe Rosé, and Naoussa Xinomavro.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "gyozas-of-the-galaxy",
+        name: "Gyozas of the Galaxy",
+        pavilion: "World Discovery",
+        subLocation: "Near Cosmic Rewind",
+        mapNumber: "#1",
+        items: [
+          { id: "gg_1", name: "Basil Pesto Chicken Dumplings", category: "Food", price: 5.99, description: "Chicken dumplings with basil pesto, fonduta cheese, tomato confit, and balsamic glaze.", fromageMontage: false },
+          { id: "gg_2", name: "Street Corn-Style Dumplings", category: "Food", price: 5.99, description: "With tomatillo salsa verde, street corn salad, cotija cheese, lime crema, and cilantro.", fromageMontage: false },
+          { id: "gg_3", name: "Edamame Dumplings (Plant-Based)", category: "Food", price: 5.29, description: "Butternut squash purée, crispy sage, and walnut-toasted garlic aïllade.", fromageMontage: false },
+          { id: "gg_4", name: "Willamette Valley Vineyards Pinot Gris", category: "Drink", subType: "Wine", price: 7.50, description: "Oregon white wine bursting with pear, Meyer lemon, and crisp mineral finish.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "hawaii",
+        name: "Hawai'i",
+        pavilion: "World Showcase",
+        subLocation: "Showcase Plaza",
+        mapNumber: "#27",
+        items: [
+          { id: "hi_1", name: "Passion Fruit Cheesecake", category: "Dessert", price: 5.49, description: "Silky cheesecake topped with tart passion fruit curd and macadamia nut crust. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "hi_2", name: "Slow-Roasted Kālua Pork Slider", category: "Food", price: 5.99, description: "Brioche slider with DOLE pineapple chutney and spicy mayonnaise on a King's Hawaiian roll.", fromageMontage: false },
+          { id: "hi_3", name: "Hawaiian Rice Bowl with SPAM", category: "Food", price: 6.29, description: "Warm sushi rice, furikake seasoning, teriyaki glaze, and seared teriyaki SPAM cubes.", fromageMontage: false },
+          { id: "hi_4", name: "Tuna Poké Bowl", category: "Food", price: 7.50, description: "Fresh Ahi tuna tossed in spicy soy-sesame glaze over seasoned sushi rice with scallions.", fromageMontage: false },
+          { id: "hi_5", name: "AULANI Sunrise Cocktail", category: "Drink", subType: "Cocktail", price: 14.00, description: "Vodka, DOLE pineapple juice, coconut cream, and grenadine float.", fromageMontage: false },
+          { id: "hi_6", name: "Maui Brewing Co. Pineapple Mana Wheat", category: "Drink", subType: "Beer", price: 6.00, description: "Crisp American wheat beer brewed with authentic Maui Gold pineapples.", fromageMontage: false },
+          { id: "hi_7", name: "Florida Orange Groves Sparkling Key Lime Wine", category: "Drink", subType: "Wine", price: 6.50, description: "Refreshing sparkling wine made with authentic Florida Key limes.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "hops-and-barley",
+        name: "Hops & Barley",
+        pavilion: "World Showcase",
+        subLocation: "The American Adventure Courtyard",
+        mapNumber: "#16",
+        items: [
+          { id: "hb_1", name: "Gulf Coast-Style Seafood Roll", category: "Food", price: 8.99, description: "Fresh lobster, rock shrimp, and creamy lobster bisque aïoli on a butter-griddled brioche roll.", fromageMontage: false },
+          { id: "hb_2", name: "Smoked Brisket and Cheddar Melt", category: "Food", price: 6.49, description: "Slow-smoked beef brisket on artisan sourdough with sharp cheddar cheese and barbecue glaze.", fromageMontage: false },
+          { id: "hb_3", name: "Freshly Baked Chocolate Pudding Cake", category: "Dessert", price: 4.99, description: "Warm dark chocolate cake with Kentucky bourbon caramel drizzle.", fromageMontage: false },
+          { id: "hb_4", name: "Harpoon Brewery Southie Lager", category: "Drink", subType: "Beer", price: 6.00, description: "Crisp, clean Boston amber lager brewed with toasted Munich malts.", fromageMontage: false },
+          { id: "hb_5", name: "Samuel Adams Boston Brick Red Irish Ale", category: "Drink", subType: "Beer", price: 6.00, description: "Smooth caramel red ale brewed exclusively for Disney festival taps.", fromageMontage: false },
+          { id: "hb_6", name: "Allagash Brewing Company Haunted House Dark Ale", category: "Drink", subType: "Beer", price: 6.00, description: "Complex Maine dark ale pairing roasted malts with bright American hop aromas.", fromageMontage: false },
+          { id: "hb_7", name: "American Craft Beer Flight", category: "Drink", subType: "Flight", price: 12.75, description: "Flight featuring Southie Lager, Boston Brick Red, and Haunted House Dark Ale.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "india",
+        name: "India",
+        pavilion: "World Showcase",
+        subLocation: "Near China Pavilion",
+        mapNumber: "#10",
+        items: [
+          { id: "in_1", name: "Chicken Tikka Masala", category: "Food", price: 6.49, description: "Marinated chicken in spiced tomato cream sauce with fennel-spiced yogurt and warm naan.", fromageMontage: false },
+          { id: "in_2", name: "Potato and Pea Samosas (Plant-Based)", category: "Food", price: 5.49, description: "Crisp spiced pastries with coriander-lime cream and tamarind dip.", fromageMontage: false },
+          { id: "in_3", name: "Mango Lassi (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 5.25, description: "Classic refreshing mango and chilled yogurt beverage with cardamom.", fromageMontage: false },
+          { id: "in_4", name: "Mango Lassi with Camikara 8-Year Rum", category: "Drink", subType: "Cocktail", price: 12.50, description: "Spiced Indian aged cane rum blended into sweet chilled mango yogurt lassi.", fromageMontage: false },
+          { id: "in_5", name: "Sula Tropicale Brut Sparkling Wine", category: "Drink", subType: "Wine", price: 7.75, description: "Crisp Indian sparkling wine made with Chenin Blanc and Shiraz grapes.", fromageMontage: false },
+          { id: "in_6", name: "United Breweries Taj Mahal Premium Lager", category: "Drink", subType: "Beer", price: 6.00, description: "Clean, refreshing classic Indian malt lager brewed for spiced dishes.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "italy",
+        name: "Italy",
+        pavilion: "World Showcase",
+        subLocation: "Italy Pavilion Piazza",
+        mapNumber: "#15",
+        items: [
+          { id: "it_1", name: "Pollo al Marsala", category: "Food", price: 8.50, description: "Roasted chicken drumstick with creamy potato purée and rich marsala mushroom sauce.", fromageMontage: false },
+          { id: "it_2", name: "Stromboli di Provolone e Prosciutto", category: "Food", price: 7.50, description: "Baked ham and provolone roll served with fresh parmesan and San Marzano tomato sauce.", fromageMontage: false },
+          { id: "it_3", name: "Italian Cannoli Siciliani", category: "Dessert", price: 5.50, description: "Crispy fried pastry shell filled with sweet ricotta chocolate-chip cream.", fromageMontage: false },
+          { id: "it_4", name: "Almond Panna Cotta", category: "Dessert", price: 6.00, description: "Creamy chilled almond panna cotta with orange marmalade and candied almonds.", fromageMontage: false },
+          { id: "it_5", name: "Italian Margarita with Limoncello", category: "Drink", subType: "Cocktail", price: 12.00, description: "Tequila and limoncello shaken with sweet and sour mix over shaved ice.", fromageMontage: false },
+          { id: "it_6", name: "Italian Bellini", category: "Drink", subType: "Cocktail", price: 12.00, description: "Sparkling Prosecco wine gently mixed with sweet white peach purée.", fromageMontage: false },
+          { id: "it_7", name: "Prosecco DOC Brut", category: "Drink", subType: "Wine", price: 11.50, description: "Crisp, aromatic Italian sparkling wine with pear and citrus notes.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "japan",
+        name: "Japan",
+        pavilion: "World Showcase",
+        subLocation: "Japan Pavilion Promenade",
+        mapNumber: "#18",
+        items: [
+          { id: "jp_1", name: "Beef Wagyu Temaki Hand Roll", category: "Food", price: 10.25, description: "Temaki hand roll with American Wagyu beef, pickled ginger, and spicy mayonnaise sauce.", fromageMontage: false },
+          { id: "jp_2", name: "Spicy Tuna Temaki Hand Roll", category: "Food", price: 10.25, description: "Spicy tuna hand roll with cucumber, rice cracker crunch, and chili sesame sauce.", fromageMontage: false },
+          { id: "jp_3", name: "Teriyaki Chicken Steamed Bun", category: "Food", price: 8.00, description: "Fluffy steamed bun filled with marinated minced chicken and sweet teriyaki sauce.", fromageMontage: false },
+          { id: "jp_4", name: "Mango-Apple Fruit Pearl (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 6.50, description: "Refreshing Calpico with green apple popping pearls, paired with wasabi-soy chips.", fromageMontage: false },
+          { id: "jp_5", name: "Kirinzan Lemonade Sake Cocktail", category: "Drink", subType: "Cocktail", price: 12.00, description: "Crisp Niigata sake shaken with fresh lemonade and yuzu citrus.", fromageMontage: false },
+          { id: "jp_6", name: "Autumn Breeze Japanese Whisky Cocktail", category: "Drink", subType: "Cocktail", price: 12.00, description: "Sake, Japanese whisky, cranberry juice, and spicy ginger ale.", fromageMontage: false },
+          { id: "jp_7", name: "Sapporo Reserve Beer Draft", category: "Drink", subType: "Beer", price: 5.00, description: "All-malt Japanese lager with floral aroma and rich, crisp finish.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "mexico",
+        name: "Mexico",
+        pavilion: "World Showcase",
+        subLocation: "Mexico Pavilion Plaza",
+        mapNumber: "#8",
+        items: [
+          { id: "mx_1", name: "Tostada de Osso Buco", category: "Food", price: 8.00, description: "Crispy corn tortilla with braised pork osso buco, cilantro-lime rice, and chipotle morita salsa.", fromageMontage: false },
+          { id: "mx_2", name: "Taco de Camarón", category: "Food", price: 8.50, description: "Crispy tempura shrimp, shredded cabbage slaw, and chipotle lime aïoli on warm tortilla.", fromageMontage: false },
+          { id: "mx_3", name: "Paleta de Moras", category: "Dessert", price: 5.75, description: "Artisan berry ice pop filled with condensed milk and chili-lime seasoning.", fromageMontage: false },
+          { id: "mx_4", name: "Cherry Nostalgia Margarita", category: "Drink", subType: "Cocktail", price: 13.50, description: "Blanco tequila, botanical liqueur, cherry purée, and fresh lime with a hibiscus salt rim.", fromageMontage: false },
+          { id: "mx_5", name: "Fruta de la Pasión Mezcalita", category: "Drink", subType: "Cocktail", price: 13.75, description: "Blanco tequila, smoky mezcal, passion fruit purée, and citrus juice with chili salt rim.", fromageMontage: false },
+          { id: "mx_6", name: "Mexican Craft Cerveza", category: "Drink", subType: "Beer", price: 8.50, description: "Draft artisan Mexican craft lager with smooth toasted malt profile.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "milled-and-mulled",
+        name: "Milled & Mulled",
+        pavilion: "World Showcase",
+        subLocation: "Between World Showcase & Imagination",
+        mapNumber: "#29",
+        items: [
+          { id: "mm_1", name: "Fall Fruit Cheesecake featuring Boursin Fig & Balsamic", category: "Dessert", price: 5.50, description: "Savory-sweet cheesecake topped with fall fruit compote and spiced fig. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "mm_2", name: "Butternut Squash and Ginger Bisque", category: "Food", price: 5.49, description: "With cinnamon sweet cream, toasted pumpkin seeds, and pumpkin seed oil.", fromageMontage: false },
+          { id: "mm_3", name: "Apple-Cinnamon Mini Churros Sundae", category: "Dessert", price: 5.29, description: "Mini churros with warm caramel drizzle and vanilla bean gelato.", fromageMontage: false },
+          { id: "mm_4", name: "Freshly Baked Carrot Cake", category: "Dessert", price: 4.99, description: "Moist spiced carrot cake with walnuts and rich cream cheese icing.", fromageMontage: false },
+          { id: "mm_5", name: "3 Daughters Brewing Apple Strudel Hard Cider", category: "Drink", subType: "Cider", price: 6.00, description: "Florida craft hard cider brimming with spiced baked apple and sweet cinnamon.", fromageMontage: false },
+          { id: "mm_6", name: "Southern Tier Sweater Weather Amber Ale", category: "Drink", subType: "Beer", price: 6.00, description: "Cozy autumn amber ale brewed with real vanilla beans and toffee notes.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "refreshment-outpost",
+        name: "Refreshment Outpost",
+        pavilion: "World Showcase",
+        subLocation: "Between China and Germany",
+        mapNumber: "#11",
+        items: [
+          { id: "ro_1", name: "Berbere-Spiced Beef Stew", category: "Food", price: 6.79, description: "Hearty African spiced beef stew served over sweet potato and white corn mealie pap.", fromageMontage: false },
+          { id: "ro_2", name: "Sweet Potato Mealie Pap", category: "Food", price: 5.79, description: "South African style seasoned porridge with roasted sweet potato mash.", fromageMontage: false },
+          { id: "ro_3", name: "South African Cream Liqueur Chocolate Mousse", category: "Dessert", price: 6.29, description: "Silky dark chocolate mousse spiked with South African Amarula marula fruit cream.", fromageMontage: false },
+          { id: "ro_4", name: "Midnight Safari African Whisky Cocktail", category: "Drink", subType: "Cocktail", price: 17.50, description: "Mansas African Whisky, crème de cassis de Dijon, and sour mix with blackberry & mint.", fromageMontage: false },
+          { id: "ro_5", name: "Breckenridge Palisade Peach Wheat Ale", category: "Drink", subType: "Beer", price: 12.50, description: "Colorado wheat ale infused with ripe, juicy sun-ripened Palisade peaches.", fromageMontage: false },
+          { id: "ro_6", name: "3 Daughters Brewing Cinnamon Donut Hard Cider", category: "Drink", subType: "Cider", price: 12.50, description: "Sweet festival cider inspired by warm cinnamon sugar carnival donuts.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "regal-eagle-smokehouse",
+        name: "Regal Eagle Smokehouse",
+        pavilion: "World Showcase",
+        subLocation: "American Adventure Pavilion",
+        mapNumber: "American Adventure (Permanent)",
+        items: [
+          { id: "re_1", name: "Blackberry Buckle (Festival Special)", category: "Dessert", price: 5.49, description: "Warm spiced blackberry buckle cake served with blackberry gelato and streusel crumble.", fromageMontage: false },
+          { id: "re_2", name: "Pumpkin Pie Milk Shake (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 5.79, description: "Vanilla ice cream blended with pumpkin pie filling, caramel sauce, and whipped cream.", fromageMontage: false },
+          { id: "re_3", name: "Tennessee Lemonade with Whiskey", category: "Drink", subType: "Cocktail", price: 16.00, description: "Jack Daniel's Tennessee Whiskey, peach schnapps, and house-made tart lemonade.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "shimmering-sips",
+        name: "Shimmering Sips hosted by Cava",
+        pavilion: "World Showcase Promenade",
+        subLocation: "Showcase Plaza (Prize Redemption Center)",
+        mapNumber: "#26",
+        items: [
+          { id: "ss_1", name: "Strawberry Champagne Trifle", category: "Dessert", price: 5.79, description: "Layered sponge cake, sweet strawberry mousse, and crisp champagne gelatin.", fromageMontage: false },
+          { id: "ss_2", name: "Berry Mimosa", category: "Drink", subType: "Cocktail", price: 7.75, description: "La Gioiosa Berry Fizz sparkling wine blended with white cranberry juice.", fromageMontage: false },
+          { id: "ss_3", name: "Blood Orange Mimosa", category: "Drink", subType: "Cocktail", price: 7.75, description: "Sparkling cava and fresh tart Sicilian blood orange juice.", fromageMontage: false },
+          { id: "ss_4", name: "Tropical Mimosa", category: "Drink", subType: "Cocktail", price: 7.75, description: "Sparkling wine and Minute Maid passion fruit, orange, and guava POG juice.", fromageMontage: false },
+          { id: "ss_5", name: "Mimosa Tasting Flight", category: "Drink", subType: "Flight", price: 15.00, description: "Tasting flight featuring Berry, Blood Orange, and Tropical mimosas.", fromageMontage: false },
+          { id: "ss_6", name: "Emile's Fromage Montage Completer Prize", category: "Dessert", price: 0.00, description: "Complimentary Strawberry Cheesecake Soft-Serve in a collectible festival cup! (Show 5 stamps).", fromageMontage: true }
+        ]
+      },
+      {
+        id: "sommerfest",
+        name: "Sommerfest",
+        pavilion: "World Showcase",
+        subLocation: "Germany Pavilion Courtyard",
+        mapNumber: "Germany (Permanent)",
+        items: [
+          { id: "sf_1", name: "Zwiebelkuchen (German Onion Cake)", category: "Food", price: 9.79, description: "Warm savory pastry tart with caramelized onions, smoky bacon, and fresh chives.", fromageMontage: false },
+          { id: "sf_2", name: "Bratwurst on a Warm Pretzel Roll", category: "Food", price: 12.69, description: "Authentic grilled German pork bratwurst served on a fresh pretzel roll with sauerkraut.", fromageMontage: false },
+          { id: "sf_3", name: "Jumbo Bavarian Pretzel", category: "Food", price: 12.49, description: "Giant warm Bavarian soft pretzel sprinkled with coarse pretzel salt.", fromageMontage: false },
+          { id: "sf_4", name: "Obatzda Bavarian Cheese Dip", category: "Food", price: 1.50, description: "Authentic spiced camembert and butter Bavarian cheese spread. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "sf_5", name: "Pretzel Bread Pudding", category: "Dessert", price: 4.79, description: "Warm bread pudding crafted with soft pretzels, caramel sauce, and vanilla custard.", fromageMontage: false },
+          { id: "sf_6", name: "Cinnamon Pretzel Cold Brew (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 6.49, description: "Joffrey's cold brew topped with sweet vanilla cream, caramel drizzle, and salted pretzel bits.", fromageMontage: false },
+          { id: "sf_7", name: "Warsteiner Dunkel Dark German Lager", category: "Drink", subType: "Beer", price: 13.50, description: "Classic German dark beer with rich roasted malt flavors and smooth caramel notes.", fromageMontage: false },
+          { id: "sf_8", name: "Bitburger Premium Pilsner Draft", category: "Drink", subType: "Beer", price: 13.50, description: "Crisp, straw-colored German pilsner with delicate herbal hop aroma.", fromageMontage: false },
+          { id: "sf_9", name: "Schöfferhofer Grapefruit Hefeweizen Draft", category: "Drink", subType: "Beer", price: 13.50, description: "Crisp German wheat beer blended with refreshing pink grapefruit juice.", fromageMontage: false },
+          { id: "sf_10", name: "Selbach-Oster Mosel Riesling Glass", category: "Drink", subType: "Wine", price: 19.00, description: "Full pour of Mosel valley German Riesling with apricot, slate, and crisp acidity.", fromageMontage: false },
+          { id: "sf_11", name: "August Kesseler Pinot Noir Glass", category: "Drink", subType: "Wine", price: 16.00, description: "Rheingau German Pinot Noir (Spätburgunder) with red cherry and subtle spice.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "spain",
+        name: "Spain",
+        pavilion: "World Showcase",
+        subLocation: "Between Germany and Italy",
+        mapNumber: "#14",
+        items: [
+          { id: "es_1", name: "Charcuterie in a Cup", category: "Food", price: 6.50, description: "Artisan cured Spanish meats, aged Manchego cheese, olives, and crisp breadsticks. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "es_2", name: "Paella Caldosa with Seafood & Chorizo", category: "Food", price: 7.95, description: "Traditional saffron calasparra rice simmered with shrimp, bay scallops, and smoky chorizo.", fromageMontage: false },
+          { id: "es_3", name: "Croquetas de Jamón", category: "Food", price: 6.50, description: "Crispy Spanish ham croquettes served with saffron aïoli.", fromageMontage: false },
+          { id: "es_4", name: "Basque Burnt Cheesecake", category: "Dessert", price: 5.50, description: "Traditional caramelized Basque cheesecake served with bitter orange marmalade.", fromageMontage: false },
+          { id: "es_5", name: "Summer in Spain Sangria Slush", category: "Drink", subType: "Cocktail", price: 12.00, description: "Frozen Simply Lemonade blended with herbal Spanish liqueurs and citrus wine.", fromageMontage: false },
+          { id: "es_6", name: "Volver Quinta del '67 Garnacha Tintorera", category: "Drink", subType: "Wine", price: 7.50, description: "Rich full-bodied Spanish red with ripe blackberries, chocolate, and toasted oak.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "swirled-showcase",
+        name: "Swirled Showcase",
+        pavilion: "World Showcase",
+        subLocation: "Between Showcase Plaza & Imagination",
+        mapNumber: "#25",
+        items: [
+          { id: "sw_1", name: "Liquid Nitrogen Almond Truffle Mousse", category: "Dessert", price: 5.50, description: "Flash-frozen almond chocolate mousse with warm whiskey-caramel sauce.", fromageMontage: false },
+          { id: "sw_2", name: "Soft-Serve in a Waffle Cone", category: "Dessert", price: 6.25, description: "Creamy salted caramel or vanilla soft-serve swirled in a crisp waffle cone.", fromageMontage: false },
+          { id: "sw_3", name: "Frozen Szarlotka (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 5.99, description: "Apple pie filling and apple-cinnamon cider topped with sweet streusel crumble.", fromageMontage: false },
+          { id: "sw_4", name: "Strawberry Beer Float", category: "Drink", subType: "Cocktail", price: 12.50, description: "Früli Belgian Strawberry White Beer topped with creamy vanilla soft-serve.", fromageMontage: false },
+          { id: "sw_5", name: "Irish Milk Shake with Baileys", category: "Drink", subType: "Cocktail", price: 13.00, description: "Guinness Stout, Baileys Original Irish Cream Liqueur, and rich vanilla ice cream.", fromageMontage: false },
+          { id: "sw_6", name: "Früli Strawberry Belgian White Beer", category: "Drink", subType: "Beer", price: 12.50, description: "Belgian wheat beer brewed with pure strawberry juice for a smooth, refreshing taste.", fromageMontage: false },
+          { id: "sw_7", name: "Banfi Rosa Regale Sparkling Red", category: "Drink", subType: "Wine", price: 15.00, description: "Sweet, effervescent Italian red sparkling wine bursting with fresh raspberry flavors.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "tangierine-cafe",
+        name: "Tangierine Café (Flavors of Medina)",
+        pavilion: "World Showcase",
+        subLocation: "Morocco Pavilion",
+        mapNumber: "#20",
+        items: [
+          { id: "mo_1", name: "Plant-Based Falafel Wrap", category: "Food", price: 6.29, description: "Spiced crispy falafel wrapped in warm flatbread with fresh herb tahini and pickled relish.", fromageMontage: false },
+          { id: "mo_2", name: "Ras el Hanout Cauliflower Bowl", category: "Food", price: 5.75, description: "Spiced roasted cauliflower florets with crispy chickpeas, cilantro, and tahini drizzle.", fromageMontage: false },
+          { id: "mo_3", name: "Chocolate-Pistachio Chewy Cookie", category: "Dessert", price: 4.29, description: "Chewy dark chocolate cookie studded with roasted pistachios and sea salt flakes.", fromageMontage: false },
+          { id: "mo_4", name: "Fig Cocktail with Feigling Liqueur", category: "Drink", subType: "Cocktail", price: 12.00, description: "Kleiner Feigling fig liqueur shaken with white cranberry juice and lemon zest.", fromageMontage: false },
+          { id: "mo_5", name: "Carib Brewery Honey & Fig Dream Hard Cider", category: "Drink", subType: "Cider", price: 6.00, description: "Crisp hard apple cider flavored with wildflower honey and luscious fig puree.", fromageMontage: false },
+          { id: "mo_6", name: "Keel Farms Golden Apple Chai Hard Cider", category: "Drink", subType: "Cider", price: 6.00, description: "Hard cider infused with crisp golden delicious apples and warm Indian chai spices.", fromageMontage: false },
+          { id: "mo_7", name: "Moroccan Hard Cider Flight", category: "Drink", subType: "Flight", price: 12.75, description: "Tasting trio of Honey & Fig, Golden Apple Chai, and Blackberry ciders.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "the-alps",
+        name: "The Alps",
+        pavilion: "World Showcase",
+        subLocation: "Near Germany Pavilion",
+        mapNumber: "#12",
+        items: [
+          { id: "al_1", name: "Warm Swiss Raclette Cheese with Baby Potatoes & Ham", category: "Food", price: 5.50, description: "Melted Alpine Swiss raclette cheese scraped over baby potatoes, ham, and cornichons. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "al_2", name: "Warm Swiss Raclette Cheese with Baby Potatoes", category: "Food", price: 5.00, description: "Melted Swiss raclette scraped over baby potatoes and tart cornichons. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "al_3", name: "Tartiflette: Potato, Bacon & Brie Gratin", category: "Food", price: 5.49, description: "Potatoes gratin baked with caramelized onions, bacon, thyme, crème fraîche, and brie. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "al_4", name: "Kirschwasser Cherry Torte", category: "Dessert", price: 5.49, description: "Cherry-brandy buttercream, almond fondant, sugared almonds, and sour cherry compote.", fromageMontage: false },
+          { id: "al_5", name: "Schlumberger Klassik Brut Sparkling Wine", category: "Drink", subType: "Wine", price: 7.75, description: "Austrian méthode traditionnelle sparkling wine with crisp green apple and fine effervescence.", fromageMontage: false },
+          { id: "al_6", name: "Salomon Undhof Stein Kremstal DAC Riesling", category: "Drink", subType: "Wine", price: 7.50, description: "Austrian dry Riesling displaying white peach, flinty slate, and lime blossom.", fromageMontage: false },
+          { id: "al_7", name: "Loimer Lois Grüner Veltliner", category: "Drink", subType: "Wine", price: 6.50, description: "Zesty Austrian white wine with white pepper, citrus peel, and crisp minerality.", fromageMontage: false },
+          { id: "al_8", name: "Austrian Alpine Wine Flight", category: "Drink", subType: "Flight", price: 8.50, description: "Tasting trio of Klassik Brut, Stein Riesling, and Grüner Veltliner.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "the-fry-basket",
+        name: "The Fry Basket",
+        pavilion: "World Discovery",
+        subLocation: "Near Test Track Walkway",
+        mapNumber: "#3",
+        items: [
+          { id: "tfb_1", name: "Fry Flight", category: "Food", price: 7.99, description: "Trio of Sea Salt-Malt Vinegar Fries, Truffle-Parmesan Fries, and Sweet Potato Casserole Fries.", fromageMontage: false },
+          { id: "tfb_2", name: "Adobo Yuca Fries (Plant-Based)", category: "Food", price: 5.79, description: "Crisp seasoned yuca fries served with garlic-cilantro dipping aïoli.", fromageMontage: false },
+          { id: "tfb_3", name: "Barrel of Monks Blood Orange Bliss Sour Ale", category: "Drink", subType: "Beer", price: 6.00, description: "Crisp Florida sour ale brewed with tart, juicy Sicilian blood orange puree.", fromageMontage: false },
+          { id: "tfb_4", name: "Boyd & Blair Handcrafted Grapefruit Mule", category: "Drink", subType: "Cocktail", price: 12.50, description: "Handcrafted potato vodka cocktail with ruby red grapefruit and spicy ginger beer.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "the-wedge",
+        name: "The Wedge (CommuniCore)",
+        pavilion: "World Celebration",
+        subLocation: "CommuniCore Hall Show Kitchen",
+        mapNumber: "#33",
+        items: [
+          { id: "we_1", name: "Cheesesteak Macaroni and Cheese", category: "Food", price: 6.49, description: "Cavatappi pasta with shaved ribeye beef, peppers, onions, and crispy bread crumbs. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "we_2", name: "Crab and Corn Macaroni and Cheese", category: "Food", price: 7.19, description: "Smoked cheddar cheese sauce, bacon, blue crab, sweet corn, herbed panko, and jalapeños. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "we_3", name: "Three-Cheese Classic Macaroni and Cheese", category: "Food", price: 5.49, description: "Smoked Wisconsin cheddar sauce baked with buttery herbed panko breadcrumbs. Emile's Fromage Montage Stamp!", fromageMontage: true },
+          { id: "we_4", name: "Artisanal Selection of Cheeses", category: "Food", price: 6.99, description: "Gourmet accompaniments featuring Proudly Wisconsin artisan cheeses, honeycomb, and crackers.", fromageMontage: false },
+          { id: "we_5", name: "Wine and Artisan Cheese Pairing", category: "Food", price: 17.50, description: "Curated wine tasting paired with fine artisanal Wisconsin reserve cheeses.", fromageMontage: false },
+          { id: "we_6", name: "Cannoli Milk Shake (Non-Alcoholic)", category: "Drink", subType: "Non-Alcoholic", price: 5.49, description: "Topped with sweet chocolate shavings, miniature cannoli shell, and a maraschino cherry.", fromageMontage: false },
+          { id: "we_7", name: "Bodegas Avancia Old Vines Godello", category: "Drink", subType: "Wine", price: 8.50, description: "Crisp dry Spanish white wine with minerality, stone fruit, and floral notes.", fromageMontage: false },
+          { id: "we_8", name: "Las Jaras Superbloom Rosé", category: "Drink", subType: "Wine", price: 8.50, description: "Refreshing California natural rosé blend with bright red fruit and citrus acidity.", fromageMontage: false },
+          { id: "we_9", name: "Caymus Vineyards Cabernet Sauvignon", category: "Drink", subType: "Wine", price: 13.00, description: "Lush Napa Valley Cabernet Sauvignon with dark berry, cassis, and cocoa notes.", fromageMontage: false },
+          { id: "we_10", name: "The Wedge Fine Wine Flight", category: "Drink", subType: "Flight", price: 12.50, description: "Trio tasting of Old Vines Godello, Superbloom Rosé, and Caymus Cabernet.", fromageMontage: false }
+        ]
+      },
+      {
+        id: "united-kingdom-beer-cart",
+        name: "United Kingdom Beer Cart",
+        pavilion: "World Showcase",
+        subLocation: "United Kingdom Pavilion Waterfront",
+        mapNumber: "UK (Permanent)",
+        items: [
+          { id: "uk_1", name: "Warm Scotch Egg", category: "Food", price: 5.75, description: "Hard-boiled egg wrapped in savory seasoned sausage meat, coated in golden breadcrumbs, and baked crisp.", fromageMontage: false },
+          { id: "uk_2", name: "Sparkling Cucumber-Gin Cocktail", category: "Drink", subType: "Cocktail", price: 17.50, description: "London dry gin with sparkling tonic water, muddled crisp cucumber, and fresh garden mint leaves.", fromageMontage: false },
+          { id: "uk_3", name: "Harp Irish Lager Draft", category: "Drink", subType: "Beer", price: 12.75, description: "Crisp, classic pale Irish lager brewed with fine malt and clean, smooth bitterness.", fromageMontage: false },
+          { id: "uk_4", name: "BrewDog Punk IPA", category: "Drink", subType: "Beer", price: 12.75, description: "Scottish craft IPA bursting with tropical New World hops and light biscuit malts.", fromageMontage: false },
+          { id: "uk_5", name: "Magners Irish Hard Cider Draft", category: "Drink", subType: "Beer", price: 12.75, description: "Crisp, refreshing authentic Irish cider fermented with 17 varieties of orchard apples.", fromageMontage: false }
+        ]
+      }
+    ];
+
+    /* -------------------------------------------------------------
+       LOCAL STORAGE & STATE MANAGEMENT
+       Format: { [itemId]: { status: 'WANT'|'TASTED'|'SKIP'|'NONE', rating: 0..5 } }
+       ------------------------------------------------------------- */
+    const STORAGE_KEY = 'epcot_food_and_wine_tracker_v2';
+    
+    let userState = {};
+    let searchDebounceTimer = null;
+    let activeCategory = 'ALL';
+    let activeStatus = 'ALL';
+    let activePavilion = 'ALL';
+    let searchQuery = '';
+
+    // Load persisted state safely
+    function loadSavedState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          userState = JSON.parse(raw);
+        }
+      } catch (err) {
+        console.error("Failed to load local festival state", err);
+        userState = {};
+      }
+    }
+
+    // Save to local storage
+    function persistState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(userState));
+      } catch (err) {
+        console.error("Failed to save state to localStorage", err);
+      }
+      updateSummaryMetrics();
+    }
+
+    // Helper item state getter
+    function getItemData(itemId) {
+      return userState[itemId] || { status: 'NONE', rating: 0 };
+    }
+
+    // Set item state
+    function setItemStatus(itemId, newStatus) {
+      if (!userState[itemId]) {
+        userState[itemId] = { status: 'NONE', rating: 0 };
+      }
+      // If clicking same active status button, reset to 'NONE'
+      userState[itemId].status = (userState[itemId].status === newStatus) ? 'NONE' : newStatus;
+      persistState();
+      renderBoothList();
+      showToast(`Updated to ${userState[itemId].status === 'NONE' ? 'Cleared' : userState[itemId].status}`);
+    }
+
+    function setItemRating(itemId, rating) {
+      if (!userState[itemId]) {
+        userState[itemId] = { status: 'NONE', rating: 0 };
+      }
+      // If user sets a star rating and wasn't marked, default mark as TASTED
+      if (userState[itemId].status === 'NONE' || userState[itemId].status === 'SKIP') {
+        userState[itemId].status = 'TASTED';
+      }
+      userState[itemId].rating = rating;
+      persistState();
+      renderBoothList();
+      showToast(`Rated ${rating} Star${rating > 1 ? 's' : ''}`);
+    }
+
+    /* -------------------------------------------------------------
+       METRICS & TOTAL CALCULATIONS
+       ------------------------------------------------------------- */
+    function updateSummaryMetrics() {
+      let totalTasted = 0;
+      let totalSpend = 0.0;
+      let totalWishlist = 0;
+      let cheeseMontageCount = 0;
+
+      // Flatten items to compute
+      FESTIVAL_BOOTHS.forEach(booth => {
+        booth.items.forEach(item => {
+          const state = getItemData(item.id);
+          if (state.status === 'TASTED') {
+            totalTasted++;
+            totalSpend += (item.price || 0);
+            if (item.fromageMontage && item.price > 0) {
+              cheeseMontageCount++;
+            }
+          } else if (state.status === 'WANT') {
+            totalWishlist++;
+          }
+        });
+      });
+
+      // Update Top Sticky Banner UI
+      document.getElementById('statTasted').textContent = totalTasted;
+      document.getElementById('statSpend').textContent = totalSpend.toFixed(2);
+      document.getElementById('statWishlist').textContent = totalWishlist;
+      
+      const cheeseText = `${Math.min(cheeseMontageCount, 5)}/5`;
+      document.getElementById('statCheeseCount').textContent = cheeseText;
+      const progressPct = Math.min((cheeseMontageCount / 5) * 100, 100);
+      document.getElementById('statCheeseBar').style.width = `${progressPct}%`;
+
+      // Trigger celebration toast if just reached 5
+      if (cheeseMontageCount >= 5) {
+        showFromageCelebration();
+      }
+    }
+
+    let celebrationShown = false;
+    function showFromageCelebration() {
+      if (celebrationShown) return;
+      const toast = document.getElementById('fromageBadgeToast');
+      toast.classList.remove('opacity-0', 'translate-y-24', 'pointer-events-none');
+      celebrationShown = true;
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-24', 'pointer-events-none');
+      }, 5000);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const text = document.getElementById('toastMessage');
+      text.textContent = message;
+      toast.classList.remove('opacity-0', 'translate-y-16', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-16', 'pointer-events-none');
+      }, 1800);
+    }
+
+    /* -------------------------------------------------------------
+       FILTER & RENDERING ENGINE
+       ------------------------------------------------------------- */
+    function itemMatchesFilters(item, booth) {
+      // 1. Category Filter
+      if (activeCategory === 'Food' && item.category !== 'Food') return false;
+      if (activeCategory === 'Dessert' && item.category !== 'Dessert') return false;
+      if (activeCategory === 'Drink' && item.category !== 'Drink') return false;
+      if (activeCategory === 'Fromage' && !item.fromageMontage) return false;
+
+      // 2. Status Filter
+      const state = getItemData(item.id);
+      if (activeStatus === 'WANT' && state.status !== 'WANT') return false;
+      if (activeStatus === 'TASTED' && state.status !== 'TASTED') return false;
+
+      // 3. Search Query Filter
+      if (searchQuery.trim() !== '') {
+        const q = searchQuery.toLowerCase();
+        const inItemName = item.name.toLowerCase().includes(q);
+        const inDesc = item.description ? item.description.toLowerCase().includes(q) : false;
+        const inBoothName = booth.name.toLowerCase().includes(q);
+        const inPavilion = booth.pavilion.toLowerCase().includes(q);
+        const inSubType = item.subType ? item.subType.toLowerCase().includes(q) : false;
+
+        if (!inItemName && !inDesc && !inBoothName && !inPavilion && !inSubType) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    function boothMatchesFilters(booth) {
+      // Pavilion filter
+      if (activePavilion !== 'ALL') {
+        if (!booth.pavilion.toLowerCase().includes(activePavilion.toLowerCase())) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // Keep track of accordion open/close per booth
+    const boothExpandedState = {};
+
+    function renderBoothList() {
+      const container = document.getElementById('boothContainer');
+      const noResults = document.getElementById('noResultsState');
+      const boothCountDisplay = document.getElementById('boothCountDisplay');
+      const resultsSummary = document.getElementById('resultsSummary');
+
+      let visibleBoothsCount = 0;
+      let totalFilteredItemsCount = 0;
+      let html = '';
+
+      FESTIVAL_BOOTHS.forEach(booth => {
+        if (!boothMatchesFilters(booth)) return;
+
+        // Check matching items
+        const matchingItems = booth.items.filter(item => itemMatchesFilters(item, booth));
+
+        // If filtering by specific item parameters and no items match, hide booth
+        if (matchingItems.length === 0) return;
+
+        visibleBoothsCount++;
+        totalFilteredItemsCount += matchingItems.length;
+
+        // By default open if searching or filter applied, else default open first 4
+        if (boothExpandedState[booth.id] === undefined) {
+          boothExpandedState[booth.id] = (searchQuery.length > 0 || activeCategory !== 'ALL' || activeStatus !== 'ALL');
+        }
+        const isExpanded = boothExpandedState[booth.id] ?? true;
+
+        // Count how many tasted in this booth
+        let boothTasted = 0;
+        booth.items.forEach(it => {
+          if (getItemData(it.id).status === 'TASTED') boothTasted++;
+        });
+
+        html += `
+          <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden transition-all hover:shadow-md booth-card" data-booth-id="${booth.id}">
+            
+            <!-- Booth Header Accordion Trigger -->
+            <button 
+              type="button"
+              onclick="toggleBoothAccordion('${booth.id}')"
+              class="w-full text-left p-3.5 bg-gradient-to-b from-stone-50 to-white hover:bg-stone-50 transition flex items-center justify-between border-b border-stone-100"
+            >
+              <div class="min-w-0 pr-2">
+                <div class="flex items-center gap-1.5 flex-wrap mb-1">
+                  <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-wine-100 text-wine-900 tracking-wider">
+                    ${booth.mapNumber}
+                  </span>
+                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">
+                    ${booth.pavilion}
+                  </span>
+                  ${boothTasted > 0 ? `
+                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 flex items-center gap-1">
+                      <i class="fa-solid fa-check text-[9px]"></i> ${boothTasted}/${booth.items.length} tasted
+                    </span>
+                  ` : ''}
+                </div>
+                <h2 class="text-base font-bold text-stone-900 truncate leading-snug font-serif">
+                  ${booth.name}
+                </h2>
+                <p class="text-[11px] text-stone-400 truncate mt-0.5">${booth.subLocation}</p>
+              </div>
+
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <span class="text-[11px] font-semibold text-stone-400 bg-stone-100 px-2 py-1 rounded-lg">
+                  ${matchingItems.length} item${matchingItems.length > 1 ? 's' : ''}
+                </span>
+                <div class="w-7 h-7 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 text-xs transition-transform ${isExpanded ? 'rotate-180 bg-wine-50 text-wine-800' : ''}">
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+              </div>
+            </button>
+
+            <!-- Booth Items Container -->
+            <div id="booth-body-${booth.id}" class="${isExpanded ? 'block' : 'hidden'} divide-y divide-stone-100">
+              ${matchingItems.map(item => renderMenuItemRow(item, booth)).join('')}
+            </div>
+
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      boothCountDisplay.textContent = visibleBoothsCount;
+
+      if (visibleBoothsCount === 0) {
+        noResults.classList.remove('hidden');
+        container.classList.add('hidden');
+        resultsSummary.textContent = "0 items found";
+      } else {
+        noResults.classList.add('hidden');
+        container.classList.remove('hidden');
+        resultsSummary.textContent = `Showing ${totalFilteredItemsCount} menu item${totalFilteredItemsCount === 1 ? '' : 's'} across ${visibleBoothsCount} booth${visibleBoothsCount === 1 ? '' : 's'}`;
+      }
+    }
+
+    function renderMenuItemRow(item, booth) {
+      const state = getItemData(item.id);
+      const isWant = state.status === 'WANT';
+      const isTasted = state.status === 'TASTED';
+      const isSkip = state.status === 'SKIP';
+
+      // Badge color for category
+      let badgeStyle = "bg-stone-100 text-stone-600";
+      let icon = "fa-utensils";
+      if (item.category === 'Dessert') {
+        badgeStyle = "bg-rose-50 text-rose-700 border border-rose-200/50";
+        icon = "fa-cake-candles";
+      } else if (item.category === 'Drink') {
+        badgeStyle = "bg-amber-50 text-amber-800 border border-amber-200/50";
+        icon = item.subType === 'Wine' ? 'fa-wine-glass' : (item.subType === 'Beer' ? 'fa-beer-mug-empty' : 'fa-martini-glass-citrus');
+      }
+
+      return `
+        <div class="p-3.5 transition-colors ${isTasted ? 'bg-emerald-50/30' : (isWant ? 'bg-amber-50/30' : (isSkip ? 'bg-stone-100/50 opacity-60' : 'bg-white'))}" id="item-card-${item.id}">
+          <div class="flex items-start justify-between gap-2.5">
+            
+            <!-- Item Title, Category & Price -->
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap mb-1">
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${badgeStyle}">
+                  <i class="fa-solid ${icon} text-[9px]"></i>
+                  ${item.subType || item.category}
+                </span>
+
+                ${item.fromageMontage ? `
+                  <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-yellow-100 text-yellow-900 border border-yellow-300" title="Emile's Fromage Montage Eligible Item">
+                    <i class="fa-solid fa-cheese text-amber-600 text-[9px]"></i> Fromage Stamp
+                  </span>
+                ` : ''}
+              </div>
+
+              <h4 class="text-xs sm:text-sm font-bold text-stone-800 leading-snug">
+                ${item.name}
+              </h4>
+              
+              <p class="text-[11px] text-stone-500 mt-1 leading-relaxed">
+                ${item.description || 'Festival exclusive seasonal preparation.'}
+              </p>
+            </div>
+
+            <!-- Price Tag -->
+            <div class="text-right flex-shrink-0">
+              <div class="text-xs sm:text-sm font-extrabold text-stone-900">
+                ${item.price === 0 ? '<span class="text-emerald-600 uppercase text-[10px] tracking-wider font-extrabold">Free Prize</span>' : `$${item.price.toFixed(2)}`}
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Action Bar: 3-State Status Toggles & Star Rating -->
+          <div class="mt-3 pt-2.5 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2">
+            
+            <!-- 3-State Status Toggle Pills -->
+            <div class="inline-flex rounded-lg bg-stone-100 p-0.5 text-[11px] font-semibold text-stone-600">
+              <button 
+                type="button"
+                onclick="handleStatusToggle('${item.id}', 'WANT')"
+                class="px-2.5 py-1 rounded-md transition flex items-center gap-1 ${isWant ? 'bg-amber-500 text-white shadow-sm' : 'hover:text-stone-900'}"
+                title="Mark Want to Try"
+              >
+                <i class="fa-solid fa-bookmark text-[9px]"></i>
+                <span>Want</span>
+              </button>
+
+              <button 
+                type="button"
+                onclick="handleStatusToggle('${item.id}', 'TASTED')"
+                class="px-2.5 py-1 rounded-md transition flex items-center gap-1 ${isTasted ? 'bg-emerald-600 text-white shadow-sm' : 'hover:text-stone-900'}"
+                title="Mark Tasted"
+              >
+                <i class="fa-solid fa-circle-check text-[9px]"></i>
+                <span>Tasted</span>
+              </button>
+
+              <button 
+                type="button"
+                onclick="handleStatusToggle('${item.id}', 'SKIP')"
+                class="px-2.5 py-1 rounded-md transition flex items-center gap-1 ${isSkip ? 'bg-stone-500 text-white shadow-sm' : 'hover:text-stone-900'}"
+                title="Mark Skip"
+              >
+                <i class="fa-solid fa-ban text-[9px]"></i>
+                <span>Skip</span>
+              </button>
+            </div>
+
+            <!-- Star Rating (5 Stars) -->
+            <div class="flex items-center gap-0.5" title="Tap to rate 1 to 5 stars">
+              ${[1, 2, 3, 4, 5].map(star => {
+                const isFilled = star <= (state.rating || 0);
+                return `
+                  <button 
+                    type="button"
+                    onclick="handleRating('${item.id}', ${star})"
+                    class="p-1 text-xs focus:outline-none transition transform hover:scale-125 ${isFilled ? 'text-amber-400' : 'text-stone-300 hover:text-amber-300'}"
+                    aria-label="Rate ${star} stars"
+                  >
+                    <i class="fa-solid fa-star"></i>
+                  </button>
+                `;
+              }).join('')}
+              ${state.rating > 0 ? `
+                <span class="text-[10px] font-bold text-stone-500 ml-1">(${state.rating})</span>
+              ` : ''}
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    // Toggle single accordion
+    function toggleBoothAccordion(boothId) {
+      boothExpandedState[boothId] = !boothExpandedState[boothId];
+      const body = document.getElementById(`booth-body-${boothId}`);
+      if (body) {
+        body.classList.toggle('hidden');
+      }
+      // re-render card to update chevron rotation
+      renderBoothList();
+    }
+
+    // Expose click functions
+    window.toggleBoothAccordion = toggleBoothAccordion;
+    window.handleStatusToggle = function(itemId, status) {
+      setItemStatus(itemId, status);
+    };
+    window.handleRating = function(itemId, rating) {
+      setItemRating(itemId, rating);
+    };
+
+    /* -------------------------------------------------------------
+       SEARCH, FILTER PILL & EVENT HANDLERS
+       ------------------------------------------------------------- */
+    function setupEventListeners() {
+      // Search input with debounce
+      const searchInput = document.getElementById('searchInput');
+      const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        if (searchQuery.trim().length > 0) {
+          clearSearchBtn.classList.remove('hidden');
+        } else {
+          clearSearchBtn.classList.add('hidden');
+        }
+
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => {
+          renderBoothList();
+        }, 180);
+      });
+
+      clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        clearSearchBtn.classList.add('hidden');
+        renderBoothList();
+      });
+
+      // Pavilion Filter
+      const pavilionFilter = document.getElementById('pavilionFilter');
+      pavilionFilter.addEventListener('change', (e) => {
+        activePavilion = e.target.value;
+        renderBoothList();
+      });
+
+      // Category Pills
+      const categoryPills = document.querySelectorAll('.cat-pill');
+      categoryPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          categoryPills.forEach(p => {
+            p.classList.remove('bg-wine-800', 'text-white', 'shadow-sm');
+            p.classList.add('bg-stone-100', 'text-stone-600');
+          });
+          pill.classList.add('bg-wine-800', 'text-white', 'shadow-sm');
+          pill.classList.remove('bg-stone-100', 'text-stone-600');
+
+          activeCategory = pill.dataset.cat;
+          renderBoothList();
+        });
+      });
+
+      // Quick filter from Emile's Cheese Trail banner
+      document.getElementById('fromageQuickFilterBtn').addEventListener('click', () => {
+        categoryPills.forEach(p => {
+          if (p.dataset.cat === 'Fromage') {
+            p.click();
+          }
+        });
+      });
+
+      // Status Filter Group
+      const statusBtns = document.querySelectorAll('#statusFilterGroup .status-btn');
+      statusBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          statusBtns.forEach(b => {
+            b.classList.remove('bg-white', 'text-stone-900', 'shadow-sm');
+          });
+          btn.classList.add('bg-white', 'text-stone-900', 'shadow-sm');
+          activeStatus = btn.dataset.status;
+          renderBoothList();
+        });
+      });
+
+      // Expand / Collapse All
+      document.getElementById('expandAllBtn').addEventListener('click', () => {
+        FESTIVAL_BOOTHS.forEach(b => boothExpandedState[b.id] = true);
+        renderBoothList();
+      });
+
+      document.getElementById('collapseAllBtn').addEventListener('click', () => {
+        FESTIVAL_BOOTHS.forEach(b => boothExpandedState[b.id] = false);
+        renderBoothList();
+      });
+
+      // Reset All Filters button in Empty state
+      document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        activeCategory = 'ALL';
+        activeStatus = 'ALL';
+        activePavilion = 'ALL';
+        pavilionFilter.value = 'ALL';
+
+        categoryPills.forEach(p => {
+          if (p.dataset.cat === 'ALL') p.classList.add('bg-wine-800', 'text-white');
+          else p.classList.remove('bg-wine-800', 'text-white');
+        });
+        statusBtns.forEach(b => {
+          if (b.dataset.status === 'ALL') b.classList.add('bg-white', 'text-stone-900');
+          else b.classList.remove('bg-white', 'text-stone-900');
+        });
+
+        renderBoothList();
+      });
+
+      // Clear Data / Reset Confirmation Modal
+      const resetModal = document.getElementById('confirmResetModal');
+      document.getElementById('resetDataBtn').addEventListener('click', () => {
+        resetModal.classList.remove('hidden');
+        resetModal.classList.add('flex');
+      });
+      document.getElementById('cancelResetBtn').addEventListener('click', () => {
+        resetModal.classList.add('hidden');
+        resetModal.classList.remove('flex');
+      });
+      document.getElementById('confirmResetBtn').addEventListener('click', () => {
+        userState = {};
+        localStorage.removeItem(STORAGE_KEY);
+        resetModal.classList.add('hidden');
+        resetModal.classList.remove('flex');
+        updateSummaryMetrics();
+        renderBoothList();
+        showToast("All festival data has been reset.");
+      });
+
+      // Export / Share Checklist Modal
+      const exportModal = document.getElementById('exportModal');
+      const exportTextarea = document.getElementById('exportTextarea');
+      document.getElementById('exportBtn').addEventListener('click', () => {
+        generateExportSummary();
+        exportModal.classList.remove('hidden');
+        exportModal.classList.add('flex');
+      });
+      document.getElementById('closeExportModal').addEventListener('click', () => {
+        exportModal.classList.add('hidden');
+        exportModal.classList.remove('flex');
+      });
+      document.getElementById('copyExportBtn').addEventListener('click', () => {
+        exportTextarea.select();
+        try {
+          document.execCommand('copy');
+          showToast("Checklist copied to clipboard!");
+        } catch (e) {
+          console.error("Clipboard copy failed", e);
+        }
+      });
+    }
+
+    function generateExportSummary() {
+      let tastedLines = [];
+      let wishlistLines = [];
+      let totalSpent = 0;
+      let cheeseCount = 0;
+
+      FESTIVAL_BOOTHS.forEach(booth => {
+        booth.items.forEach(item => {
+          const s = getItemData(item.id);
+          if (s.status === 'TASTED') {
+            totalSpent += item.price;
+            const stars = s.rating > 0 ? ` (${'★'.repeat(s.rating)})` : '';
+            tastedLines.push(`• [${booth.name}] ${item.name} - $${item.price.toFixed(2)}${stars}`);
+            if (item.fromageMontage && item.price > 0) cheeseCount++;
+          } else if (s.status === 'WANT') {
+            wishlistLines.push(`• [${booth.name}] ${item.name} - $${item.price.toFixed(2)}`);
+          }
+        });
+      });
+
+      const dateStr = new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      let output = `🍷 EPCOT International Food & Wine Festival Checklist (${dateStr})\n`;
+      output += `==========================================\n`;
+      output += `Total Tasted: ${tastedLines.length} dishes/drinks\n`;
+      output += `Estimated Spend: $${totalSpent.toFixed(2)}\n`;
+      output += `Emile's Fromage Montage: ${cheeseCount}/5 stamps collected\n\n`;
+
+      output += `--- ✅ ITEMS TASTED ---\n`;
+      output += tastedLines.length > 0 ? tastedLines.join('\n') : "None recorded yet!\n";
+
+      output += `\n--- 📌 WANT TO TRY (WISHLIST) ---\n`;
+      output += wishlistLines.length > 0 ? wishlistLines.join('\n') : "No items on wishlist yet!\n";
+
+      document.getElementById('exportTextarea').value = output;
+    }
+
+    /* -------------------------------------------------------------
+       INITIALIZATION
+       ------------------------------------------------------------- */
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedState();
+      updateSummaryMetrics();
+      setupEventListeners();
+      renderBoothList();
+    });
+  </script>
+</body>
+</html>
