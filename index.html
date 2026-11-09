@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="overflow-x-hidden">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -41,75 +41,74 @@
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen selection:bg-rose-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen overflow-x-hidden selection:bg-rose-500 selection:text-white">
 
   <!-- TOP STICKY METRICS & STATS HEADER -->
-  <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-xl">
-    <div class="max-w-4xl mx-auto px-4 py-2.5 sm:py-3">
-      <!-- Title & Action Buttons -->
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center space-x-2">
-          <span class="text-2xl">🍷</span>
-          <div>
-            <h1 class="text-base sm:text-lg font-black tracking-tight text-white leading-tight">EPCOT Food &amp; Wine</h1>
+    <!-- TOP STICKY METRICS & STATS HEADER -->
+  <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 shadow-xl w-full">
+    <div class="max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5">
+      <!-- Row 1: Brand & Actions -->
+      <div class="flex items-center justify-between gap-2 mb-2">
+        <!-- Brand & Taster -->
+        <div class="flex items-center space-x-2 min-w-0">
+          <span class="text-xl sm:text-2xl shrink-0">🍷</span>
+          <div class="min-w-0">
+            <h1 class="text-sm sm:text-base font-black tracking-tight text-white leading-tight truncate">EPCOT Food &amp; Wine</h1>
             <div class="flex items-center space-x-1 text-[11px] text-slate-400">
-              <span>Taster:</span>
-              <button onclick="editUserName()" id="currentUserName" class="text-gold-400 font-bold hover:underline flex items-center space-x-0.5">
-                <span>Friend</span>
-                <span class="text-[9px]">✏️</span>
+              <span class="shrink-0">Taster:</span>
+              <button onclick="editUserName()" id="currentUserName" class="text-gold-400 font-bold hover:underline flex items-center space-x-0.5 truncate">
+                <span class="truncate">Friend</span>
+                <span class="text-[9px] shrink-0">✏️</span>
               </button>
             </div>
           </div>
         </div>
 
-        <div class="flex items-center space-x-1.5 sm:space-x-2">
+        <!-- Sleek Responsive Action Buttons (No Horizontal Overflow) -->
+        <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
           <!-- Digital Passport Button -->
-          <button onclick="openPassportModal()" class="px-2.5 py-1.5 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/50 rounded-lg text-xs font-bold transition flex items-center space-x-1 shadow-[0_0_12px_-2px_rgba(245,158,11,0.25)]">
-            <span>🛂</span>
-            <span class="hidden sm:inline">Passport</span>
-            <span class="sm:hidden font-extrabold text-[11px]">Passport</span>
+          <button onclick="openPassportModal()" class="h-8 px-2 sm:px-2.5 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/50 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1 shadow-[0_0_10px_-2px_rgba(245,158,11,0.2)]" title="Digital Passport">
+            <span class="text-sm">🛂</span>
+            <span class="hidden sm:inline text-xs">Passport</span>
           </button>
           <!-- Map Overlay Button -->
-          <button onclick="openMapModal()" class="px-2.5 py-1.5 bg-sky-950/40 text-sky-300 hover:bg-sky-900/60 border border-sky-500/40 rounded-lg text-xs font-bold transition flex items-center space-x-1">
-            <span>🗺️</span>
-            <span class="hidden sm:inline">Map</span>
-            <span class="sm:hidden">Map</span>
+          <button onclick="openMapModal()" class="h-8 px-2 sm:px-2.5 bg-sky-950/40 text-sky-300 hover:bg-sky-900/60 border border-sky-500/40 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1" title="Interactive Map">
+            <span class="text-sm">🗺️</span>
+            <span class="hidden sm:inline text-xs">Map</span>
           </button>
           <!-- Group Board Button -->
-          <button onclick="openBoardModal()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg text-xs font-bold transition flex items-center space-x-1">
-            <span>🏆</span>
-            <span class="hidden sm:inline">Board</span>
-            <span class="sm:hidden">Board</span>
+          <button onclick="openBoardModal()" class="h-8 px-2 sm:px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1" title="Group Tasting Board">
+            <span class="text-sm">🏆</span>
+            <span class="hidden sm:inline text-xs">Board</span>
           </button>
           <!-- Export Button -->
-          <button onclick="openExportModal()" class="px-2.5 py-1.5 bg-rose-900/40 text-rose-300 hover:bg-rose-900/60 border border-rose-500/30 rounded-lg text-xs font-bold transition flex items-center space-x-1">
-            <span>📤</span>
-            <span class="hidden sm:inline">Share</span>
-            <span class="sm:hidden">Share</span>
+          <button onclick="openExportModal()" class="h-8 px-2 sm:px-2.5 bg-rose-900/40 text-rose-300 hover:bg-rose-900/60 border border-rose-500/30 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1" title="Share & Export">
+            <span class="text-sm">📤</span>
+            <span class="hidden sm:inline text-xs">Share</span>
           </button>
         </div>
       </div>
 
-      <!-- Live Spend, Wishlist & Tasted Metrics -->
+      <!-- Row 2: Live Spend, Wishlist & Tasted Metrics -->
       <div class="grid grid-cols-4 gap-1.5 sm:gap-2 text-center text-xs">
-        <div class="bg-slate-800/80 p-2 rounded-xl border border-slate-700/60">
-          <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tasted</div>
-          <div id="metricTastedCount" class="text-base sm:text-lg font-black text-emerald-400">0</div>
+        <div class="bg-slate-800/80 p-1.5 sm:p-2 rounded-xl border border-slate-700/60">
+          <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tasted</div>
+          <div id="metricTastedCount" class="text-sm sm:text-base font-black text-emerald-400">0</div>
         </div>
-        <div class="bg-slate-800/80 p-2 rounded-xl border border-slate-700/60">
-          <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Spend</div>
-          <div id="metricTotalSpend" class="text-base sm:text-lg font-black text-emerald-400">$0.00</div>
+        <div class="bg-slate-800/80 p-1.5 sm:p-2 rounded-xl border border-slate-700/60">
+          <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Spend</div>
+          <div id="metricTotalSpend" class="text-sm sm:text-base font-black text-emerald-400">$0.00</div>
         </div>
-        <div class="bg-slate-800/80 p-2 rounded-xl border border-slate-700/60">
-          <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Est. Budget</div>
-          <div id="metricEstSpend" class="text-base sm:text-lg font-black text-amber-400">$0.00</div>
+        <div class="bg-slate-800/80 p-1.5 sm:p-2 rounded-xl border border-slate-700/60">
+          <div class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400 tracking-wider">Est. Budget</div>
+          <div id="metricEstSpend" class="text-sm sm:text-base font-black text-amber-400">$0.00</div>
         </div>
-        <div onclick="openPassportModal('fromage')" class="bg-amber-950/40 hover:bg-amber-950/60 transition p-2 rounded-xl border border-amber-500/50 cursor-pointer group shadow-[0_0_10px_-2px_rgba(245,158,11,0.2)]">
-          <div class="text-[10px] uppercase font-bold text-amber-400 tracking-wider flex items-center justify-center space-x-1">
+        <div onclick="openPassportModal('fromage')" class="bg-amber-950/40 hover:bg-amber-950/60 transition p-1.5 sm:p-2 rounded-xl border border-amber-500/50 cursor-pointer group shadow-[0_0_10px_-2px_rgba(245,158,11,0.2)]">
+          <div class="text-[9px] sm:text-[10px] uppercase font-bold text-amber-400 tracking-wider flex items-center justify-center space-x-1">
             <span>🧀</span>
             <span>Trail</span>
           </div>
-          <div id="metricFromage" class="text-base sm:text-lg font-black text-gold-400">0/5</div>
+          <div id="metricFromage" class="text-sm sm:text-base font-black text-gold-400">0/5</div>
         </div>
       </div>
     </div>
@@ -172,29 +171,44 @@
       </button>
     </div>
 
-    <!-- CONTROLS: SORT TOGGLE & SEARCH BAR -->
+    <!-- CONTROLS: SORT TOGGLE, SEARCH BAR & ACCORDION EXPAND/COLLAPSE -->
     <div class="space-y-2">
-      <div class="flex flex-col sm:flex-row gap-2">
-        <div class="relative flex-1">
-          <input 
-            type="text" 
-            id="searchInput" 
-            oninput="handleSearch(this.value)"
-            placeholder="Search booth, dish, cocktail, beer, wine, country..." 
-            class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 pl-10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition"
-          >
-          <span class="absolute left-3.5 top-3 text-slate-500 text-sm">🔍</span>
-          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-2.5 text-slate-500 hover:text-white text-xs px-2 py-0.5 rounded bg-slate-800">✕ Clear</button>
-        </div>
+      <!-- Search Bar -->
+      <div class="relative w-full">
+        <input 
+          type="text" 
+          id="searchInput" 
+          oninput="handleSearch(this.value)"
+          placeholder="Search booth, dish, cocktail, beer, wine, country..." 
+          class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 pl-10 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition"
+        >
+        <span class="absolute left-3.5 top-3 text-slate-500 text-sm">🔍</span>
+        <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-2.5 text-slate-500 hover:text-white text-xs px-2 py-0.5 rounded bg-slate-800">✕ Clear</button>
+      </div>
 
-        <!-- Sort Toggle Bar (Alphabetical vs Map Booth #) -->
-        <div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-1 shrink-0 self-start sm:self-auto">
-          <span class="text-[10px] uppercase font-bold text-slate-400 px-2">Sort:</span>
-          <button onclick="setSortMode('alpha')" id="sort-alpha" class="sort-btn px-2.5 py-1 text-xs font-bold rounded-lg transition bg-rose-600 text-white shadow">
+      <!-- Action Row: Sort Bar (Left) + Expand / Collapse All (Right) -->
+      <div class="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
+        <!-- Sort Toggle Bar -->
+        <div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-1 shrink-0">
+          <span class="text-[10px] uppercase font-bold text-slate-400 px-1.5 sm:px-2">Sort:</span>
+          <button onclick="setSortMode('alpha')" id="sort-alpha" class="sort-btn px-2 sm:px-2.5 py-1 text-xs font-bold rounded-lg transition bg-rose-600 text-white shadow">
             🔤 A–Z
           </button>
-          <button onclick="setSortMode('map')" id="sort-map" class="sort-btn px-2.5 py-1 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white">
-            🗺️ Map / Booth #
+          <button onclick="setSortMode('map')" id="sort-map" class="sort-btn px-2 sm:px-2.5 py-1 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white">
+            🗺️ Map #
+          </button>
+        </div>
+
+        <!-- Expand All / Collapse All Buttons (Always Visible) -->
+        <div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-1 shrink-0 space-x-1">
+          <button onclick="setExpandAll(true)" class="px-2 sm:px-2.5 py-1 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition flex items-center space-x-1" title="Expand All Booths">
+            <span>⊞</span>
+            <span class="text-[11px] sm:text-xs">Expand All</span>
+          </button>
+          <span class="text-slate-700 text-xs">|</span>
+          <button onclick="setExpandAll(false)" class="px-2 sm:px-2.5 py-1 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition flex items-center space-x-1" title="Collapse All Booths">
+            <span>⊟</span>
+            <span class="text-[11px] sm:text-xs">Collapse All</span>
           </button>
         </div>
       </div>
@@ -671,6 +685,14 @@
       renderBooths();
     }
 
+    function setExpandAll(expand) {
+      BOOTHS_DATA.forEach(b => {
+        userState.expandedBooths[b.id] = expand;
+      });
+      saveState();
+      renderBooths();
+    }
+
     function setFilter(filterType) {
       currentFilter = filterType;
       document.querySelectorAll('.filter-pill').forEach(btn => {
@@ -861,7 +883,7 @@
         const tastedInBooth = booth.items.filter(i => (userState.items[i.id] || {}).status === 'tasted').length;
         const wantInBooth = booth.items.filter(i => (userState.items[i.id] || {}).status === 'want').length;
 
-        const isExpanded = userState.expandedBooths[booth.id] ?? (searchQuery.length > 0 || currentFilter !== 'all');
+        const isExpanded = userState.expandedBooths[booth.id] ?? (searchQuery.length > 0);
 
         // DUAL BORDER STYLING:
         // Traditional Walk-Up: Gold/Amber border & shadow
